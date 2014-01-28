@@ -369,12 +369,12 @@ GOTO_exp:
 ;
 
 conditional_exp:
-	variable comparision_op conditional_exp
+	conditional_exp comparision_op variable
 	{
 
 	}
 |
-	constant comparision_op conditional_exp
+	conditional_exp comparision_op constant
 	{
 
 	}
