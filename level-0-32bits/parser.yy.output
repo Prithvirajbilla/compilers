@@ -26,8 +26,8 @@ Production Rules
 23: assignment_statement ('=') ->  variable '=' conditional_exp ';'
 24: IFELSE (IF) ->  IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
 25: GOTO_exp (GOTO) ->  GOTO '<' NAME INTEGER_NUMBER '>' ';'
-26: conditional_exp ->  variable comparision_op conditional_exp
-27: conditional_exp ->  constant comparision_op conditional_exp
+26: conditional_exp ->  conditional_exp comparision_op variable
+27: conditional_exp ->  conditional_exp comparision_op constant
 28: conditional_exp ->  variable comparision_op constant
 29: conditional_exp ->  constant comparision_op variable
 30: conditional_exp ->  variable comparision_op variable
@@ -349,14 +349,20 @@ State 44:
 
 State 45:
 24: IFELSE -> IF '(' conditional_exp  . ')' GOTO_exp ELSE GOTO_exp 
+26: conditional_exp -> conditional_exp  . comparision_op variable 
+27: conditional_exp -> conditional_exp  . comparision_op constant 
   0:   On ')' to state 53
+  1:   On comparision_op to state 54
+  2:   On '>' to state 55
+  3:   On '<' to state 56
+  4:   On '=' to state 57
+  5:   On '!' to state 58
 
 
 State 46:
-26: conditional_exp -> variable  . comparision_op conditional_exp 
 28: conditional_exp -> variable  . comparision_op constant 
 30: conditional_exp -> variable  . comparision_op variable 
-  0:   On comparision_op to state 54
+  0:   On comparision_op to state 59
   1:   On '>' to state 55
   2:   On '<' to state 56
   3:   On '=' to state 57
@@ -364,10 +370,9 @@ State 46:
 
 
 State 47:
-27: conditional_exp -> constant  . comparision_op conditional_exp 
 29: conditional_exp -> constant  . comparision_op variable 
 31: conditional_exp -> constant  . comparision_op constant 
-  0:   On comparision_op to state 59
+  0:   On comparision_op to state 60
   1:   On '>' to state 55
   2:   On '<' to state 56
   3:   On '=' to state 57
@@ -381,27 +386,13 @@ State 48:
 
 State 49:
 25: GOTO_exp -> GOTO '<' NAME  . INTEGER_NUMBER '>' ';' 
-  0:   On INTEGER_NUMBER to state 60
+  0:   On INTEGER_NUMBER to state 61
 
 
 State 50:
 21: assignment_statement -> variable '=' variable  . ';' 
-26: conditional_exp -> variable  . comparision_op conditional_exp 
 28: conditional_exp -> variable  . comparision_op constant 
 30: conditional_exp -> variable  . comparision_op variable 
-  0:   On ';' to state 61
-  1:   On comparision_op to state 54
-  2:   On '>' to state 55
-  3:   On '<' to state 56
-  4:   On '=' to state 57
-  5:   On '!' to state 58
-
-
-State 51:
-22: assignment_statement -> variable '=' constant  . ';' 
-27: conditional_exp -> constant  . comparision_op conditional_exp 
-29: conditional_exp -> constant  . comparision_op variable 
-31: conditional_exp -> constant  . comparision_op constant 
   0:   On ';' to state 62
   1:   On comparision_op to state 59
   2:   On '>' to state 55
@@ -410,26 +401,43 @@ State 51:
   5:   On '!' to state 58
 
 
+State 51:
+22: assignment_statement -> variable '=' constant  . ';' 
+29: conditional_exp -> constant  . comparision_op variable 
+31: conditional_exp -> constant  . comparision_op constant 
+  0:   On ';' to state 63
+  1:   On comparision_op to state 60
+  2:   On '>' to state 55
+  3:   On '<' to state 56
+  4:   On '=' to state 57
+  5:   On '!' to state 58
+
+
 State 52:
 23: assignment_statement -> variable '=' conditional_exp  . ';' 
-  0:   On ';' to state 63
+26: conditional_exp -> conditional_exp  . comparision_op variable 
+27: conditional_exp -> conditional_exp  . comparision_op constant 
+  0:   On ';' to state 64
+  1:   On comparision_op to state 54
+  2:   On '>' to state 55
+  3:   On '<' to state 56
+  4:   On '=' to state 57
+  5:   On '!' to state 58
 
 
 State 53:
 24: IFELSE -> IF '(' conditional_exp ')'  . GOTO_exp ELSE GOTO_exp 
-  0:   On GOTO_exp to state 64
+  0:   On GOTO_exp to state 65
   1:   On GOTO to state 38
 
 
 State 54:
-26: conditional_exp -> variable comparision_op  . conditional_exp 
-28: conditional_exp -> variable comparision_op  . constant 
-30: conditional_exp -> variable comparision_op  . variable 
-  0:   On conditional_exp to state 65
-  1:   On constant to state 66
-  2:   On variable to state 67
+26: conditional_exp -> conditional_exp comparision_op  . variable 
+27: conditional_exp -> conditional_exp comparision_op  . constant 
+  0:   On variable to state 66
+  1:   On constant to state 67
+  2:   On NAME to state 40
   3:   On INTEGER_NUMBER to state 48
-  4:   On NAME to state 40
 
 
 State 55:
@@ -457,70 +465,56 @@ State 58:
 
 
 State 59:
-27: conditional_exp -> constant comparision_op  . conditional_exp 
-29: conditional_exp -> constant comparision_op  . variable 
-31: conditional_exp -> constant comparision_op  . constant 
-  0:   On conditional_exp to state 72
+28: conditional_exp -> variable comparision_op  . constant 
+30: conditional_exp -> variable comparision_op  . variable 
+  0:   On constant to state 72
   1:   On variable to state 73
-  2:   On constant to state 74
+  2:   On INTEGER_NUMBER to state 48
   3:   On NAME to state 40
-  4:   On INTEGER_NUMBER to state 48
 
 
 State 60:
-25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER  . '>' ';' 
-  0:   On '>' to state 75
+29: conditional_exp -> constant comparision_op  . variable 
+31: conditional_exp -> constant comparision_op  . constant 
+  0:   On variable to state 74
+  1:   On constant to state 75
+  2:   On NAME to state 40
+  3:   On INTEGER_NUMBER to state 48
 
 
 State 61:
+25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER  . '>' ';' 
+  0:   On '>' to state 76
+
+
+State 62:
 21: assignment_statement -> variable '=' variable ';'  . 
   Reduce by 21: assignment_statement -> variable '=' variable ';'  . 
 
 
-State 62:
+State 63:
 22: assignment_statement -> variable '=' constant ';'  . 
   Reduce by 22: assignment_statement -> variable '=' constant ';'  . 
 
 
-State 63:
+State 64:
 23: assignment_statement -> variable '=' conditional_exp ';'  . 
   Reduce by 23: assignment_statement -> variable '=' conditional_exp ';'  . 
 
 
-State 64:
-24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp  . ELSE GOTO_exp 
-  0:   On ELSE to state 76
-
-
 State 65:
-26: conditional_exp -> variable comparision_op conditional_exp  . 
-  Reduce by 26: conditional_exp -> variable comparision_op conditional_exp  . 
+24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp  . ELSE GOTO_exp 
+  0:   On ELSE to state 77
 
 
 State 66:
-28: conditional_exp -> variable comparision_op constant  . 
-27: conditional_exp -> constant  . comparision_op conditional_exp 
-29: conditional_exp -> constant  . comparision_op variable 
-31: conditional_exp -> constant  . comparision_op constant 
-  0:   On comparision_op to state 59
-  1:   On '>' to state 55
-  2:   On '<' to state 56
-  3:   On '=' to state 57
-  4:   On '!' to state 58
-  Reduce by 28: conditional_exp -> variable comparision_op constant  . 
+26: conditional_exp -> conditional_exp comparision_op variable  . 
+  Reduce by 26: conditional_exp -> conditional_exp comparision_op variable  . 
 
 
 State 67:
-30: conditional_exp -> variable comparision_op variable  . 
-26: conditional_exp -> variable  . comparision_op conditional_exp 
-28: conditional_exp -> variable  . comparision_op constant 
-30: conditional_exp -> variable  . comparision_op variable 
-  0:   On comparision_op to state 54
-  1:   On '>' to state 55
-  2:   On '<' to state 56
-  3:   On '=' to state 57
-  4:   On '!' to state 58
-  Reduce by 30: conditional_exp -> variable comparision_op variable  . 
+27: conditional_exp -> conditional_exp comparision_op constant  . 
+  Reduce by 27: conditional_exp -> conditional_exp comparision_op constant  . 
 
 
 State 68:
@@ -544,53 +538,42 @@ State 71:
 
 
 State 72:
-27: conditional_exp -> constant comparision_op conditional_exp  . 
-  Reduce by 27: conditional_exp -> constant comparision_op conditional_exp  . 
+28: conditional_exp -> variable comparision_op constant  . 
+  Reduce by 28: conditional_exp -> variable comparision_op constant  . 
 
 
 State 73:
-29: conditional_exp -> constant comparision_op variable  . 
-26: conditional_exp -> variable  . comparision_op conditional_exp 
-28: conditional_exp -> variable  . comparision_op constant 
-30: conditional_exp -> variable  . comparision_op variable 
-  0:   On comparision_op to state 54
-  1:   On '>' to state 55
-  2:   On '<' to state 56
-  3:   On '=' to state 57
-  4:   On '!' to state 58
-  Reduce by 29: conditional_exp -> constant comparision_op variable  . 
+30: conditional_exp -> variable comparision_op variable  . 
+  Reduce by 30: conditional_exp -> variable comparision_op variable  . 
 
 
 State 74:
-31: conditional_exp -> constant comparision_op constant  . 
-27: conditional_exp -> constant  . comparision_op conditional_exp 
-29: conditional_exp -> constant  . comparision_op variable 
-31: conditional_exp -> constant  . comparision_op constant 
-  0:   On comparision_op to state 59
-  1:   On '>' to state 55
-  2:   On '<' to state 56
-  3:   On '=' to state 57
-  4:   On '!' to state 58
-  Reduce by 31: conditional_exp -> constant comparision_op constant  . 
+29: conditional_exp -> constant comparision_op variable  . 
+  Reduce by 29: conditional_exp -> constant comparision_op variable  . 
 
 
 State 75:
-25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER '>'  . ';' 
-  0:   On ';' to state 77
+31: conditional_exp -> constant comparision_op constant  . 
+  Reduce by 31: conditional_exp -> constant comparision_op constant  . 
 
 
 State 76:
-24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp ELSE  . GOTO_exp 
-  0:   On GOTO_exp to state 78
-  1:   On GOTO to state 38
+25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER '>'  . ';' 
+  0:   On ';' to state 78
 
 
 State 77:
+24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp ELSE  . GOTO_exp 
+  0:   On GOTO_exp to state 79
+  1:   On GOTO to state 38
+
+
+State 78:
 25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER '>' ';'  . 
   Reduce by 25: GOTO_exp -> GOTO '<' NAME INTEGER_NUMBER '>' ';'  . 
 
 
-State 78:
+State 79:
 24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp  . 
   Reduce by 24: IFELSE -> IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp  . 
 
