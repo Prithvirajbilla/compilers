@@ -31,6 +31,8 @@
 
 using namespace std;
 
+enum rop { LE, LT, GT, GE, NE, EQ};
+
 class Ast;
 
 class Ast
@@ -116,4 +118,58 @@ public:
 	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
 };
 
+class Goto_Ast:public Ast
+{
+	int block_num;
+
+public:
+	Goto_Ast(int a);
+
+	void print_ast(ostream & file_buffer);
+
+	int blocknum();
+
+	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
+};
+
+class Relational_Ast:public Ast
+{
+	Ast * lhs;
+	Ast * rhs;
+	rop rel_oper;
+public:
+	Relational_Ast(Ast * temp_lhs, Ast * temp_rhs, rop a);
+
+	~Relational_Ast();
+
+	Data_Type get_data_type();
+
+	bool check_ast(int line);
+
+	void print_ast(ostream & file_buffer);
+
+	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
+	
+};
+
+class IfCondition_Ast:public Ast
+{
+	Goto_Ast * lhs;
+	Goto_Ast * rhs;
+	Relational_Ast * cond;
+public:
+	IfCondition_Ast(Goto_Ast * temp_lhs, Goto_Ast * temp_rhs, Relational_Ast * cond);
+
+	~IfCondition_Ast();
+
+	Data_Type get_data_type();
+
+	bool check_ast(int line);
+
+	void print_ast(ostream & file_buffer);
+
+	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
+
+	
+};
 #endif

@@ -267,3 +267,171 @@ Eval_Result & Return_Ast::evaluate(Local_Environment & eval_env, ostream & file_
 }
 
 template class Number_Ast<int>;
+
+////////////////////////////////////////////////////////////////
+//int block_num;
+
+Goto_Ast::Goto_Ast(int a)
+{
+	block_num = a;
+}
+
+void Goto_Ast::print_ast(ostream & file_buffer)
+{
+	file_buffer << AST_SPACE << "Goto statement:\n";
+	file_buffer	<< AST_NODE_SPACE"Successor: ";
+	file_buffer << block_num << "\n";
+}
+
+int Goto_Ast::blocknum()
+{
+	return block_num;
+}
+
+Eval_Result & Goto_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
+{
+	Eval_Result & result = *new Eval_Result_Value_Int();
+	return result;
+}
+
+
+
+/////////////////////////////////////////////////////////////////
+Relational_Ast::Relational_Ast(Ast * temp_lhs, Ast * temp_rhs, rop oper)
+{
+	lhs = temp_lhs;
+	rhs = temp_rhs;
+	rel_oper = oper;
+}
+
+Relational_Ast::~Relational_Ast()
+{
+	delete lhs;
+	delete rhs;
+}
+
+Data_Type Relational_Ast::get_data_type()
+{
+	return node_data_type;
+}
+
+bool Relational_Ast::check_ast(int line)
+{
+	if (lhs->get_data_type() == rhs->get_data_type())
+	{
+		node_data_type = lhs->get_data_type();
+		return true;
+	}
+
+	report_error("Relational Expression lhs and rhs data types doesn't match", line);
+}
+
+void Relational_Ast::print_ast(ostream & file_buffer)
+{
+	file_buffer << AST_SPACE << "Condition: ";
+	//LE, LT, GT, GE, NE, EE
+	switch(rel_oper)
+	{
+		case 0:
+		{
+			file_buffer << "LE\n";
+			break;
+		}
+		case 1:
+		{
+			file_buffer << "LT\n";
+			break;
+		}
+		case 2:
+		{
+			file_buffer << "GT\n";
+			break;
+		}
+		case 3:
+		{
+			file_buffer << "GE\n";
+			break;
+		}
+		case 4:
+		{
+			file_buffer << "NE\n";
+			break;
+		}
+		default:
+		file_buffer << "EE\n";
+	}
+	file_buffer << AST_NODE_SPACE"LHS (";
+	lhs->print_ast(file_buffer);
+	file_buffer << ")\n";
+
+	file_buffer << AST_NODE_SPACE << "RHS (";
+	rhs->print_ast(file_buffer);
+	file_buffer << ")\n";
+}
+
+Eval_Result & Relational_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
+{
+	// Eval_Result & result = rhs->evaluate(eval_env, file_buffer);
+
+	// if (result.is_variable_defined() == false)
+	// 	report_error("Variable should be defined to be on rhs", NOLINE);
+
+	// lhs->set_value_of_evaluation(eval_env, result);
+
+	// // Print the result
+
+	// print_ast(file_buffer);
+
+	// lhs->print_value(eval_env, file_buffer);
+
+	// return result;
+}
+// /////////////////////////////////////////////////////////////////
+// 	Goto_Ast * lhs;
+// 	Goto_Ast * rhs;
+// 	Relational_Ast * cond;
+
+IfCondition_Ast::IfCondition_Ast(Goto_Ast * temp_lhs, Goto_Ast * temp_rhs, Relational_Ast * relcond)
+{
+	lhs = temp_lhs;
+	rhs = temp_rhs;
+	cond = relcond;
+}
+
+IfCondition_Ast::~IfCondition_Ast()
+{
+	delete lhs;
+	delete rhs;
+}
+
+Data_Type IfCondition_Ast::get_data_type()
+{
+	return cond->get_data_type();
+}
+
+bool IfCondition_Ast::check_ast(int line)
+{
+	if (lhs->get_data_type() == rhs->get_data_type())
+	{
+		node_data_type = lhs->get_data_type();
+		return true;
+	}
+
+	report_error("Conditional statement data type not compatible", line);
+}
+
+void IfCondition_Ast::print_ast(ostream & file_buffer)
+{
+	file_buffer << AST_SPACE << "If_Else statement:\n";
+	cond->print_ast(file_buffer);
+	file_buffer << AST_NODE_SPACE <<"True Successor: ";
+	file_buffer << lhs->blocknum()<<"\n";
+	file_buffer << AST_NODE_SPACE <<"False Successor: ";
+	file_buffer << rhs->blocknum()<<"\n";
+}
+
+Eval_Result & IfCondition_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
+{
+
+}
+///////////////////////////////////////////

@@ -36,7 +36,7 @@ return		{
 			return Parser::RETURN; 
 		}
 
-[<>:{}()!;=]	{
+[:{}();]	{
 			store_token_name("META CHAR");
 			return matched()[0];
 		}
@@ -49,6 +49,49 @@ return		{
 
 				return Parser::INTEGER_NUMBER; 
 			}
+
+"="		{
+			store_token_name("ASSIGN_OP");
+
+			return Parser::ASSIGN_OP;	
+		}
+
+"!="	{
+			store_token_name("NE");
+
+			return Parser::OP2;	
+		}
+
+"=="	{	
+			store_token_name("EQ");
+
+			return Parser::OP3;	
+		}
+
+">="		{
+			store_token_name("GE");
+
+			return Parser::OP4;	
+		}
+
+"<="		{
+			store_token_name("LE");
+
+			return Parser::OP5;	
+		}
+
+">"		{
+			store_token_name("GT");
+
+			return Parser::OP6;	
+		}
+
+"<"		{
+			store_token_name("LT");
+
+			return Parser::OP7;	
+		}
+
 
 if		{
 			store_token_name("IF");
@@ -63,6 +106,15 @@ else	{
 goto	{
 			store_token_name("GOTO");
 			return Parser::GOTO;
+		}
+
+"<bb "[[:digit:]_]+">"	{
+			store_token_name("BASIC BLOCK");
+			ParserBase::STYPE__ * val = getSval();
+			std::string number = matched(); 
+			val->integer_value = atoi(number.substr(4,number.length()-5).c_str());
+			
+			return Parser::basicblock_number; 
 		}
 
 [[:alpha:]_][[:alpha:][:digit:]_]* {

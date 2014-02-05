@@ -4,7 +4,7 @@
                                 cfglp : A CFG Language Processor
                                 --------------------------------
 
-           About: 
+           About:
 
            Implemented   by  Tanu  Kanvar (tanu@cse.iitb.ac.in) and Uday
            Khedker    (http://www.cse.iitb.ac.in/~uday)  for the courses
@@ -32,6 +32,10 @@
 	std::string * string_value;
 	list<Ast *> * ast_list;
 	Ast * ast;
+	rop rel_op;
+	Goto_Ast * goto_ast;
+	IfCondition_Ast * ifelse_ast;
+	Relational_Ast * rel_ast;
 	Symbol_Table * symbol_table;
 	Symbol_Table_Entry * symbol_entry;
 	Basic_Block * basic_block;
@@ -40,11 +44,20 @@
 };
 
 %token <integer_value> INTEGER_NUMBER
+%token <integer_value> basicblock_number
 %token <string_value> NAME
 %token RETURN INTEGER 
 %token IF 
 %token ELSE
 %token GOTO
+%token ASSIGN_OP
+%token OP2 
+%token OP3 
+%token OP7 
+%token OP5 
+%token OP6
+%token OP4  
+
 
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
@@ -55,7 +68,10 @@
 %type <ast> assignment_statement
 %type <ast> variable
 %type <ast> constant
-
+%type <ast> IFELSE
+%type <goto_ast> GOTO_exp
+%type <rel_ast> conditional_exp
+%type <rel_op> comparision_op
 %start program
 
 %%
@@ -63,89 +79,87 @@
 program:
 	declaration_statement_list procedure_name
 	{
-		#if 0
+		
 		program_object.set_global_table(*$1);
 		return_statement_used_flag = false;				// No return statement in the current procedure till now
-		#endif
+		
 	}
 	procedure_body
 	{
-		#if 0
+		
 		program_object.set_procedure_map(*current_procedure);
 
 		if ($1)
 			$1->global_list_in_proc_map_check(get_line_number());
 
 		delete $1;
-		#endif
+		
 	}
 |
 	procedure_name
 	{
-		#if 0
+		
 		return_statement_used_flag = false;				// No return statement in the current procedure till now
-		#endif
+		
 	}
 	procedure_body
 	{	
-		#if 0
+		
 		program_object.set_procedure_map(*current_procedure);
-		#endif
+		
 	}
 ;
 
 procedure_name:
 	NAME '(' ')'
 	{
-		#if 0
+		
 		current_procedure = new Procedure(void_data_type, *$1);
-		#endif
+		
 	}
 ;
 
 procedure_body:
 	'{' declaration_statement_list
 	{
-		#if 0
+		
 		current_procedure->set_local_list(*$2);
 		delete $2;
-		#endif
+		
 	}
 	basic_block_list '}'
 	{
-		#if 0
+		
 		if (return_statement_used_flag == false)
 		{
 			int line = get_line_number();
 			report_error("Atleast 1 basic block should have a return statement", line);
 		}
-
 		current_procedure->set_basic_block_list(*$4);
 
 		delete $4;
-		#endif
+		
 	}
 |
 	'{' basic_block_list '}'
 	{
-		#if 0
+
 		if (return_statement_used_flag == false)
 		{
 			int line = get_line_number();
 			report_error("Atleast 1 basic block should have a return statement", line);
 		}
-
 		current_procedure->set_basic_block_list(*$2);
 
 		delete $2;
-		#endif
+		
 	}
 ;
 
 declaration_statement_list:
 	declaration_statement
 	{
-		#if 0
+		
 		int line = get_line_number();
 		program_object.variable_in_proc_map_check($1->get_variable_name(), line);
 
@@ -158,12 +172,12 @@ declaration_statement_list:
 
 		$$ = new Symbol_Table();
 		$$->push_symbol($1);
-		#endif
+		
 	}
 |
 	declaration_statement_list declaration_statement
 	{
-		#if 0
+		
 		// if declaration is local then no need to check in global list
 		// if declaration is global then this list is global list
 
@@ -192,25 +206,25 @@ declaration_statement_list:
 			$$ = new Symbol_Table();
 
 		$$->push_symbol($2);
-		#endif
+		
 	}
 ;
 
 declaration_statement:
 	INTEGER NAME ';'
 	{
-		#if 0
+		
 		$$ = new Symbol_Table_Entry(*$2, int_data_type);
 
 		delete $2;
-		#endif
+		
 	}
 ;
 
 basic_block_list:
 	basic_block_list basic_block
 	{
-		#if 0
+		
 		if (!$2)
 		{
 			int line = get_line_number();
@@ -221,12 +235,12 @@ basic_block_list:
 
 		$$ = $1;
 		$$->push_back($2);
-		#endif
+		
 	}
 |
 	basic_block
 	{
-		#if 0
+		
 		if (!$1)
 		{
 			int line = get_line_number();
@@ -235,52 +249,44 @@ basic_block_list:
 
 		$$ = new list<Basic_Block *>;
 		$$->push_back($1);
-		#endif
+		
 	}
 	
 ;
 
 basic_block:
-	'<' NAME INTEGER_NUMBER '>' ':' executable_statement_list
+	
+	basicblock_number ':' executable_statement_list
 	{
-		#if 0
-		if (*$2 != "bb")
-		{
-			int line = get_line_number();
-			report_error("Not basic block lable", line);
-		}
-
-		if ($3 < 2)
+		if ($1 < 2)
 		{
 			int line = get_line_number();
 			report_error("Illegal basic block lable", line);
 		}
 
-		if ($6 != NULL)
-			$$ = new Basic_Block($3, *$6);
+		if ($3 != NULL)
+			$$ = new Basic_Block($1, *$3);
 		else
 		{
 			list<Ast *> * ast_list = new list<Ast *>;
-			$$ = new Basic_Block($3, *ast_list);
+			$$ = new Basic_Block($1, *ast_list);
 		}
 
-		delete $6;
-		delete $2;
-		#endif
+		delete $3;
 	}
 ;
 
 executable_statement_list:
 	assignment_statement_list
 	{
-		#if 0
+		
 		$$ = $1;
-		#endif
+		
 	}
 |
 	assignment_statement_list RETURN ';'
 	{
-		#if 0
+		
 		Ast * ret = new Return_Ast();
 
 		return_statement_used_flag = true;					// Current procedure has an occurrence of return statement
@@ -292,30 +298,42 @@ executable_statement_list:
 			$$ = new list<Ast *>;
 
 		$$->push_back(ret);
-		#endif
+		
 	}
 |
 	assignment_statement_list IFELSE
 	{
+		return_statement_used_flag = false;
 
+		if($1 != NULL)
+			$$ = $1;
+		else
+			$$ = new list<Ast *>;
+		$$->push_back($2);
 	}
 |
 	assignment_statement_list GOTO_exp
 	{
+		return_statement_used_flag = false;
 
+		if($1 != NULL)
+			$$ = $1;
+		else
+			$$ = new list<Ast *>;
+		$$->push_back($2); 
 	}
 ;
 
 assignment_statement_list:
 	{
-		#if 0
+		
 		$$ = NULL;
-		#endif
+		
 	}
 |
 	assignment_statement_list assignment_statement
 	{
-		#if 0
+		
 		if ($1 == NULL)
 			$$ = new list<Ast *>;
 
@@ -323,104 +341,119 @@ assignment_statement_list:
 			$$ = $1;
 
 		$$->push_back($2);
-		#endif
+		
 	}
 ;
 
 assignment_statement:
-	variable '=' variable ';'
+	variable ASSIGN_OP variable ';'
 	{
-		#if 0
+		
 		$$ = new Assignment_Ast($1, $3);
 
 		int line = get_line_number();
 		$$->check_ast(line);
-		#endif
+		
 	}
 |
-	variable '=' constant ';'
+	variable ASSIGN_OP constant ';'
 	{
-		#if 0
+		
 		$$ = new Assignment_Ast($1, $3);
 
 		int line = get_line_number();
 		$$->check_ast(line);
-		#endif
+		
 	}
 |
-	variable '=' conditional_exp ';'
+	variable ASSIGN_OP conditional_exp ';'
 	{
-
+		$$ = new Assignment_Ast($1, $3);
 	}
 ;
 
 IFELSE:
 	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
 	{
-
+		$$ = new IfCondition_Ast($5, $7, $3);
 	}
 ;
 
 GOTO_exp:
-	GOTO '<' NAME INTEGER_NUMBER '>' ';'
+	GOTO basicblock_number ';'
 	{
-
+		$$ = new Goto_Ast($2);
 	}
 ;
 
 conditional_exp:
 	conditional_exp comparision_op variable
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);
 	}
 |
 	conditional_exp comparision_op constant
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);	
 	}
 |
 	variable comparision_op constant
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);
 	}
 |
 	constant comparision_op variable
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);
 	}
 |
 	variable comparision_op variable
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);
 	}
 |
 	constant comparision_op constant
 	{
-
+		$$ = new Relational_Ast($1, $3, $2);
 	}
 ;
 
 comparision_op:
-	'>'
-|
-	'<'
-|
-	'<' '='
-|
-	'>' '='
-|
-	'=' '='
-|
-	'!' '='
+	OP6
 	{
-
+		$$ = GT;
+	}
+|
+	OP7
+	{
+		$$ = LT;
+	}
+|
+	OP5
+	{
+		$$ = LE;
+	}
+|
+	OP4
+	{
+		$$ = GE;
+	}
+|
+	OP3
+	{
+		$$ = EQ;
+	}
+|
+	OP2
+	{
+		$$ = NE;
 	}
 ;
 
 variable:
 	NAME
 	{
-		#if 0
+		
 		Symbol_Table_Entry var_table_entry;
 
 		if (current_procedure->variable_in_symbol_list_check(*$1))
@@ -438,16 +471,15 @@ variable:
 		$$ = new Name_Ast(*$1, var_table_entry);
 
 		delete $1;
-		#endif
+		
 	}
 ;
 
 constant:
 	INTEGER_NUMBER
 	{
-		#if 0
+		
 		$$ = new Number_Ast<int>($1, int_data_type);
-		#endif
+		
 	}
 ;
-

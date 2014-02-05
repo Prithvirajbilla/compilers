@@ -57,3 +57,6 @@ parser.cc parserbase.h: parser.yy parser.ih parser.h
 clean :
 	rm -rf *.o cfglp scannerbase.h parserbase.h scanner.cc parser.cc parser.yy.output
 	rm -rf cscope.out tags a.out
+	rm  -rf test_files/*.cfg
+	rm -rf test_files/*.eval
+	rm -rf test_files/*.tok
