@@ -1,0 +1,39 @@
+TEAM MEMBERS:
+110050051 Vamsidhar Yeddu
+110050065 Prithviraj M billa
+
+CODE CHANGES:
+
+To add '!=' to the logical operators set, we added '!' in the meta char block in scanner.ll file.
+
+Actions on seeing if, else and goto are also added to scanner.ll file.
+
+For example consider the following code:
+
+if		{
+			store_token_name("IF");  //this prints out IF
+			return Parser::IF;		 //this returns IF to the parser which matches it with the token IF
+		}		
+
+similarly for else and goto.
+
+Following tokens are added:
+IF
+ELSE
+GOTO
+
+The following grammar rules are added to parser.yy file:
+
+executable_statement_list: assignment_statement_list IFELSE | assignment_statement_list GOTO_exp
+
+assignment_statement: variable '=' conditional_exp ';' 
+
+IFELSE:	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
+
+GOTO_exp:	GOTO '<' NAME INTEGER_NUMBER '>' ';'
+
+conditional_exp: 	conditional_exp comparision_op variable | conditional_exp comparision_op constant 
+					| variable comparision_op constant | constant comparision_op variable 
+					| variable comparision_op variable | constant comparision_op constant
+
+comparision_op:	'>' | '<' | '<' '=' | '>' '=' | '=' '=' | '!' '='
