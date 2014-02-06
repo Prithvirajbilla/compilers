@@ -4,36 +4,58 @@ TEAM MEMBERS:
 
 CODE CHANGES:
 
-To add '!=' to the logical operators set, we added '!' in the meta char block in scanner.ll file.
+Filename:
 
-Actions on seeing if, else and goto are also added to scanner.ll file.
+ast.hh
+=======
 
-For example consider the following code:
+Added declarations for Classes
 
-if		{
-			store_token_name("IF");  //this prints out IF
-			return Parser::IF;		 //this returns IF to the parser which matches it with the token IF
-		}		
+	class Goto_Ast;
+	class Relational_Ast;
+	class IfCondition_Ast;
 
-similarly for else and goto.
 
-Following tokens are added:
-IF
-ELSE
-GOTO
+ast.cc
+=======
 
-The following grammar rules are added to parser.yy file:
+Implemented the functions in declared in ast.hh
 
-executable_statement_list: assignment_statement_list IFELSE | assignment_statement_list GOTO_exp
+print_ast(ostream &file_buffer) 
+	prints the Abstract syntax tree of the statement.
 
-assignment_statement: variable '=' conditional_exp ';' 
+evaluate(Local_Environment & eval_env, ostream & file_buffer)
+	evaluates the statement expression and prints.
 
-IFELSE:	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
+procedure.hh
+=============
 
-GOTO_exp:	GOTO '<' NAME INTEGER_NUMBER '>' ';'
+Added a new function declaration to the get the Basic block object of a specific 
+block number
 
-conditional_exp: 	conditional_exp comparision_op variable | conditional_exp comparision_op constant 
-					| variable comparision_op constant | constant comparision_op variable 
-					| variable comparision_op variable | constant comparision_op constant
 
-comparision_op:	'>' | '<' | '<' '=' | '>' '=' | '=' '=' | '!' '='
+procedure.cc
+==============
+
+Implemented the function described above.
+Changed the evaluate function of the Procedure object such that it jumps to the correct basic block
+
+(instead of iterating to the next block.)
+
+
+parser.yy
+============
+
+1) added left keyword to the Operator tokens to take left precedence and also "<" ,">" ,"=>","<=" 
+have higher precedence than "==" and "!=";
+
+2) Added action routines to all the production rules.
+
+3) Changed the production rule for conditional_exp by making it ambiguous
+	conditional_exp -> conditional_exp OP2 conditional_exp
+
+scanner.ll
+==============
+
+1) added new tokens for all the comparison operators
+2) Added new token for the Basci Block.

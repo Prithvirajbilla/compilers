@@ -67,7 +67,6 @@
 %type <ast> IFELSE
 %type <goto_ast> GOTO_exp
 %type <ast> conditional_exp
-%type <rel_op> comparision_op
 %start program
 
 %%
@@ -390,37 +389,6 @@ conditional_exp:
 	}
 ;
 
-comparision_op:
-	OP6
-	{
-		$$ = GT;
-	}
-|
-	OP7
-	{
-		$$ = LT;
-	}
-|
-	OP5
-	{
-		$$ = LE;
-	}
-|
-	OP4
-	{
-		$$ = GE;
-	}
-|
-	OP3
-	{
-		$$ = EQ;
-	}
-|
-	OP2
-	{
-		$$ = NE;
-	}
-;
 
 variable:
 	NAME
