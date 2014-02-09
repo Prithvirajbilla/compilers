@@ -23,6 +23,7 @@
 
 %filenames="scanner"
 %lex-source="scanner.cc"
+DIGIT    [0-9]
 
 %%
 
@@ -30,6 +31,11 @@ int		{
 			store_token_name("INTEGER");
 			return Parser::INTEGER; 
 		}
+
+float 	{
+             store_token_name("FLOAT");
+             return Parser::FLOAT;
+        }
 
 return		{ 
 			store_token_name("RETURN");
@@ -40,6 +46,12 @@ return		{
 			store_token_name("META CHAR");
 			return matched()[0];
 		}
+
+{DIGIT}+"."{DIGIT}* {
+						store_token_name("FLOAT_NUM");
+						return Parser::FLOAT_NUMBER;
+					}
+
 
 [-]?[[:digit:]_]+ 	{ 
 				store_token_name("NUM");
@@ -103,10 +115,31 @@ else	{
 			return Parser::ELSE;
 		}
 
+"+"		{
+			store_token_name("ADD");
+			return Parser::ADD;
+		}
+
+"-"		{
+			store_token_name("MINUS");
+			return Parser::MINUS;
+		}
+
+"*"		{
+			store_token_name("MULT");
+			return Parser::MULT;
+		}
+
+"/"		{
+			store_token_name("DIV");
+			return Parser::DIV;
+		}
+
 goto	{
 			store_token_name("GOTO");
 			return Parser::GOTO;
 		}
+
 
 "<bb "[[:digit:]_]+">"	{
 			store_token_name("BASIC BLOCK");

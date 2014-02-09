@@ -29,6 +29,7 @@
 %union 
 {
 	int integer_value;
+	double float_value;
 	std::string * string_value;
 	list<Ast *> * ast_list;
 	Ast * ast;
@@ -43,17 +44,19 @@
 	Procedure * procedure;
 };
 
+%token <float_value> FLOAT_NUMBER
 %token <integer_value> INTEGER_NUMBER
 %token <integer_value> basicblock_number
 %token <string_value> NAME
-%token RETURN INTEGER 
+%token RETURN INTEGER FLOAT
 %token IF 
 %token ELSE
 %token GOTO
 %token ASSIGN_OP
 %left OP2 OP3
 %left OP7 OP5 OP6 OP4  
-
+%left MINUS ADD
+%left DIV MULT
 
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
