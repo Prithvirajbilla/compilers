@@ -334,8 +334,57 @@ assignment_statement:
 	{
 		$$ = new Assignment_Ast($1, $3);
 	}
+|
+
+	variable ASSIGN_OP arithmetic_exp ':'
+	{
+
+	}
 ;
 
+arithmetic_exp:
+	variable expr_symbol variable ':'
+	{
+
+	}
+|
+	variable expr_symbol constant ':'
+	{
+
+	}
+|
+	constant expr_symbol constant ':'
+	{
+
+	}
+|
+	constant expr_symbol variable ':'
+	{
+
+	}
+;
+
+expr_symbol:
+	ADD 
+	{
+
+	}
+|
+	MINUS
+	{
+
+	}
+|
+	MULT
+	{
+
+	}
+|
+	DIV
+	{
+
+	}
+;
 IFELSE:
 	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
 	{
