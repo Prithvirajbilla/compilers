@@ -44,7 +44,6 @@
 	Procedure * procedure;
 };
 
-%token <float_value> FLOAT_NUMBER
 %token <integer_value> INTEGER_NUMBER
 %token <integer_value> basicblock_number
 %token <string_value> NAME
@@ -54,9 +53,10 @@
 %token GOTO
 %token ASSIGN_OP
 %left OP2 OP3
-%left OP7 OP5 OP6 OP4  
+%left OP7 OP5 OP6 OP4
 %left MINUS ADD
 %left DIV MULT
+%token <float_value> FLOAT_NUMBER
 
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
@@ -206,6 +206,11 @@ declaration_statement:
 		delete $2;
 		
 	}
+|
+	FLOAT NAME ';'
+	{
+
+	}
 ;
 
 basic_block_list:
@@ -336,32 +341,22 @@ assignment_statement:
 	}
 |
 
-	variable ASSIGN_OP arithmetic_exp ':'
+	variable ASSIGN_OP arithmetic_exp ';'
 	{
 
 	}
 ;
 
 arithmetic_exp:
-	variable expr_symbol variable ':'
+	arithmetic_exp expr_symbol arithmetic_exp 
 	{
 
 	}
-|
-	variable expr_symbol constant ':'
+|	
+	conditional_exp
 	{
 
-	}
-|
-	constant expr_symbol constant ':'
-	{
-
-	}
-|
-	constant expr_symbol variable ':'
-	{
-
-	}
+	} 	
 ;
 
 expr_symbol:
@@ -430,6 +425,8 @@ conditional_exp:
 		$$ = new Relational_Ast($1, $3, LT);
 	}
 |
+
+
 	variable
 	{
 		$$ = $1;
@@ -473,5 +470,10 @@ constant:
 		
 		$$ = new Number_Ast<int>($1, int_data_type);
 		
+	}
+|
+	FLOAT_NUMBER
+	{
+
 	}
 ;

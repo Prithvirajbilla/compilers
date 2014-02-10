@@ -31,11 +31,11 @@ int		{
 			store_token_name("INTEGER");
 			return Parser::INTEGER; 
 		}
-
 float 	{
              store_token_name("FLOAT");
              return Parser::FLOAT;
         }
+
 
 return		{ 
 			store_token_name("RETURN");
@@ -52,7 +52,6 @@ return		{
 						return Parser::FLOAT_NUMBER;
 					}
 
-
 [-]?[[:digit:]_]+ 	{ 
 				store_token_name("NUM");
 
@@ -61,6 +60,9 @@ return		{
 
 				return Parser::INTEGER_NUMBER; 
 			}
+
+
+
 
 "="		{
 			store_token_name("ASSIGN_OP");
@@ -116,22 +118,22 @@ else	{
 		}
 
 "+"		{
-			store_token_name("ADD");
+			store_token_name("ARITHOP");
 			return Parser::ADD;
 		}
 
 "-"		{
-			store_token_name("MINUS");
+			store_token_name("ARITHOP");
 			return Parser::MINUS;
 		}
 
 "*"		{
-			store_token_name("MULT");
+			store_token_name("ARITHOP");
 			return Parser::MULT;
 		}
 
 "/"		{
-			store_token_name("DIV");
+			store_token_name("ARITHOP");
 			return Parser::DIV;
 		}
 
