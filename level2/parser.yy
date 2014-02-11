@@ -54,10 +54,10 @@
 %token ELSE
 %token GOTO
 %token ASSIGN_OP
-%left OP2 OP3
-%left OP7 OP5 OP6 OP4
 %left '/' '*'
 %left '-' '+'
+%left OP2 OP3
+%left OP7 OP5 OP6 OP4
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
 %type <basic_block_list> basic_block_list
@@ -77,20 +77,20 @@
 program:
 	declaration_statement_list procedure_name
 	{
-		
+		#if 0
 		program_object.set_global_table(*$1);
-		
+		#endif
 	}
 	procedure_body
 	{
-		
+		#if 0
 		program_object.set_procedure_map(current_procedure, get_line_number());
 
 		if ($1)
 			$1->global_list_in_proc_map_check(get_line_number());
 
 		delete $1;
-		
+		#endif
 	}
 |
 	procedure_name
@@ -101,52 +101,52 @@ program:
 	}
 	procedure_body
 	{	
-		
+		#if 0
 		program_object.set_procedure_map(current_procedure, get_line_number());
-		
+		#endif
 	}
 ;
 
 procedure_name:
 	NAME '(' ')'
 	{
-		
+		#if 0
 		current_procedure = new Procedure(void_data_type, *$1);
-		
+		#endif
 	}
 ;
 
 procedure_body:
 	'{' declaration_statement_list
 	{
-		
+		#if 0
 		current_procedure->set_local_list(*$2);
 		delete $2;
-		
+		#endif
 	}
 	basic_block_list '}'
 	{
-		
+		#if 0
 		current_procedure->set_basic_block_list(*$4);
 
 		delete $4;
-		
+		#endif
 	}
 |
 	'{' basic_block_list '}'
 	{
-
+		#if 0
 		current_procedure->set_basic_block_list(*$2);
 
 		delete $2;
-		
+		#endif
 	}
 ;
 
 declaration_statement_list:
 	declaration_statement
 	{
-		
+		#if 0
 		int line = get_line_number();
 		program_object.variable_in_proc_map_check($1->get_variable_name(), line);
 
@@ -159,12 +159,12 @@ declaration_statement_list:
 
 		$$ = new Symbol_Table();
 		$$->push_symbol($1);
-		
+		#endif
 	}
 |
 	declaration_statement_list declaration_statement
 	{
-		
+		#if 0
 		// if declaration is local then no need to check in global list
 		// if declaration is global then this list is global list
 
@@ -193,18 +193,18 @@ declaration_statement_list:
 			$$ = new Symbol_Table();
 
 		$$->push_symbol($2);
-		
+		#endif
 	}
 ;
 
 declaration_statement:
 	INTEGER NAME ';'
 	{
-		
+		#if 0
 		$$ = new Symbol_Table_Entry(*$2, int_data_type);
 
 		delete $2;
-		
+		#endif
 	}
 |
 	FLOAT NAME ';'
@@ -221,7 +221,7 @@ declaration_statement:
 basic_block_list:
 	basic_block_list basic_block
 	{
-		
+		#if 0
 		if (!$2)
 		{
 			int line = get_line_number();
@@ -232,12 +232,13 @@ basic_block_list:
 
 		$$ = $1;
 		$$->push_back($2);
+		#endif
 		
 	}
 |
 	basic_block
 	{
-		
+		#if 0
 		if (!$1)
 		{
 			int line = get_line_number();
@@ -246,6 +247,7 @@ basic_block_list:
 
 		$$ = new list<Basic_Block *>;
 		$$->push_back($1);
+		#endif
 		
 	}
 	
@@ -255,6 +257,7 @@ basic_block:
 	
 	basicblock_number ':' executable_statement_list
 	{
+		#if 0
 		if ($1 < 2)
 		{
 			int line = get_line_number();
@@ -270,20 +273,22 @@ basic_block:
 		}
 
 		delete $3;
+		#endif
 	}
 ;
 
 executable_statement_list:
 	assignment_statement_list
 	{
-		
+		#if 0
 		$$ = $1;
+		#endif
 		
 	}
 |
 	assignment_statement_list RETURN ';'
 	{
-		
+		#if 0
 		Ast * ret = new Return_Ast();
 
 
@@ -294,39 +299,47 @@ executable_statement_list:
 			$$ = new list<Ast *>;
 
 		$$->push_back(ret);
+		#endif
 		
 	}
 |
 	assignment_statement_list IFELSE
-	{
+	{	
+		#if 0
 
 		if($1 != NULL)
 			$$ = $1;
 		else
 			$$ = new list<Ast *>;
 		$$->push_back($2);
+		#endif
 	}
 |
 	assignment_statement_list GOTO_exp
-	{
+	{	
+		#if 0
 
 		if($1 != NULL)
 			$$ = $1;
 		else
 			$$ = new list<Ast *>;
 		$$->push_back($2); 
+		#endif
 	}
 ;
 
 assignment_statement_list:
-	{
+	{	
+		#if 0
 		
 		$$ = NULL;
+		#endif
 		
 	}
 |
 	assignment_statement_list assignment_statement
-	{
+	{	
+		#if 0
 		
 		if ($1 == NULL)
 			$$ = new list<Ast *>;
@@ -335,59 +348,78 @@ assignment_statement_list:
 			$$ = $1;
 
 		$$->push_back($2);
+		#endif
 		
 	}
 ;
 
 assignment_statement:
 	variable ASSIGN_OP conditional_exp';'
-	{
+	{	
+		#if 0
 		$$ = new Assignment_Ast($1, $3);
+		#endif
 	}
 ;
 IFELSE:
 	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
-	{
+	{	
+		#if 0
 		$$ = new IfCondition_Ast($5, $7, $3);
+		#endif
 	}
 ;
 
 GOTO_exp:
 	GOTO basicblock_number ';'
-	{
+	{	
+		#if 0	
 		$$ = new Goto_Ast($2);
+		#endif
 	}
 ;
 
 conditional_exp:
 	conditional_exp OP2 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, NE);
+		#endif
 	}
 |
 	conditional_exp OP3 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, EQ);
+		#endif
 	}
 |	
 	conditional_exp OP4 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, GE);
+		#endif
 	}
 |
 	conditional_exp OP5 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, LE);
+		#endif
 	}
 |
 	conditional_exp OP6 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, GT);
+		#endif
 	}
 |
 	conditional_exp OP7 conditional_exp
 	{
+		#if 0
 		$$ = new Relational_Ast($1, $3, LT);
+		#endif
 	}
 |	
 	conditional_exp '+' conditional_exp
@@ -417,20 +449,51 @@ conditional_exp:
 |
 	variable
 	{
+		#if 0
 		$$ = $1;
+		#endif
 	}
 |
 	constant
 	{
+		#if 0
 		$$ = $1;
+		#endif
 	}
+
+|	'(' FLOAT ')' conditional_exp
+	{
+		#if 0
+
+		#endif
+	}
+
+|	'(' DOUBLE ')' conditional_exp
+	{
+		#if 0
+		
+		#endif
+	}
+|	'(' INTEGER ')' conditional_exp
+	{
+		#if 0
+		
+		#endif
+	}
+|	'(' conditional_exp ')'
+	{
+		#if 0
+
+		#endif
+	}
+
 ;
 
 
 variable:
 	NAME
 	{
-		
+		#if 0
 		Symbol_Table_Entry var_table_entry;
 
 		if (current_procedure->variable_in_symbol_list_check(*$1))
@@ -448,6 +511,7 @@ variable:
 		$$ = new Name_Ast(*$1, var_table_entry);
 
 		delete $1;
+		#endif
 		
 	}
 ;
@@ -455,8 +519,9 @@ variable:
 constant:
 	INTEGER_NUMBER
 	{
-		
+		#if 0
 		$$ = new Number_Ast<int>($1, int_data_type);
+		#endif
 		
 	}
 |
