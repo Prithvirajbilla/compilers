@@ -29,7 +29,8 @@
 %union 
 {
 	int integer_value;
-	double float_value;
+	float float_value;
+	double double_value;
 	std::string * string_value;
 	list<Ast *> * ast_list;
 	Ast * ast;
@@ -46,18 +47,17 @@
 
 %token <integer_value> INTEGER_NUMBER
 %token <integer_value> basicblock_number
+%token <float_value> FLOAT_NUMBER
 %token <string_value> NAME
-%token RETURN INTEGER FLOAT
-%token IF 
+%token RETURN INTEGER FLOAT DOUBLE
+%token IF 	
 %token ELSE
 %token GOTO
 %token ASSIGN_OP
 %left OP2 OP3
 %left OP7 OP5 OP6 OP4
-%left MINUS ADD
-%left DIV MULT
-%token <float_value> FLOAT_NUMBER
-
+%left '/' '*'
+%left '-' '+'
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
 %type <basic_block_list> basic_block_list
@@ -211,6 +211,11 @@ declaration_statement:
 	{
 
 	}
+|   
+	DOUBLE NAME ';'
+	{
+
+	}
 ;
 
 basic_block_list:
@@ -335,49 +340,9 @@ assignment_statement_list:
 ;
 
 assignment_statement:
-	variable ASSIGN_OP conditional_exp ';'
+	variable ASSIGN_OP conditional_exp';'
 	{
 		$$ = new Assignment_Ast($1, $3);
-	}
-|
-
-	variable ASSIGN_OP arithmetic_exp ';'
-	{
-
-	}
-;
-
-arithmetic_exp:
-	arithmetic_exp expr_symbol arithmetic_exp 
-	{
-
-	}
-|	
-	conditional_exp
-	{
-
-	} 	
-;
-
-expr_symbol:
-	ADD 
-	{
-
-	}
-|
-	MINUS
-	{
-
-	}
-|
-	MULT
-	{
-
-	}
-|
-	DIV
-	{
-
 	}
 ;
 IFELSE:
@@ -424,9 +389,32 @@ conditional_exp:
 	{
 		$$ = new Relational_Ast($1, $3, LT);
 	}
+|	
+	conditional_exp '+' conditional_exp
+	{
+
+	}
+|	
+	conditional_exp '-' conditional_exp
+	{
+
+	}
+|	
+	conditional_exp '*' conditional_exp
+	{
+
+	}
+|	
+	conditional_exp '/' conditional_exp
+	{
+
+	}
+|	
+	'-' conditional_exp
+	{
+
+	}
 |
-
-
 	variable
 	{
 		$$ = $1;

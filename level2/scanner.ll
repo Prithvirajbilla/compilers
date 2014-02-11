@@ -32,10 +32,15 @@ int		{
 			return Parser::INTEGER; 
 		}
 float 	{
-             store_token_name("FLOAT");
+             store_token_name("META CHAR");
              return Parser::FLOAT;
-        }
 
+        }
+        
+double  {
+			store_token_name("META CHAR");
+			return Parser::DOUBLE;
+		}
 
 return		{ 
 			store_token_name("RETURN");
@@ -47,8 +52,15 @@ return		{
 			return matched()[0];
 		}
 
+[-/+*]		{
+				store_token_name ("ARITHOP");
+                return matched()[0]; 
+            }
+
 {DIGIT}+"."{DIGIT}* {
 						store_token_name("FLOAT_NUM");
+						ParserBase::STYPE__ * val = getSval();
+						val->float_value = atoi(matched().c_str());
 						return Parser::FLOAT_NUMBER;
 					}
 
@@ -117,25 +129,6 @@ else	{
 			return Parser::ELSE;
 		}
 
-"+"		{
-			store_token_name("ARITHOP");
-			return Parser::ADD;
-		}
-
-"-"		{
-			store_token_name("ARITHOP");
-			return Parser::MINUS;
-		}
-
-"*"		{
-			store_token_name("ARITHOP");
-			return Parser::MULT;
-		}
-
-"/"		{
-			store_token_name("ARITHOP");
-			return Parser::DIV;
-		}
 
 goto	{
 			store_token_name("GOTO");
