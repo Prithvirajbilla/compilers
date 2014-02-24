@@ -1,0 +1,21 @@
+TEAM MEMBERS:
+110050051 Vamsidhar Yeddu
+110050065 Prithviraj M billa
+
+CODE CHANGES:
+
+Filename:
+
+scanner.ll
+==========
+1. added new tokens for all the arithmetic operators "+","-","/","*"
+2. added new token "float", "double". to the language
+
+
+parser.yy
+============
+
+1) added precedence order to the tokens;
+2) added new rules to the declarative statements and constants.
+3) Changed the production rule for conditional_exp by making it ambiguous
+	conditional_exp -> conditional_exp '+' conditional_exp
