@@ -30,12 +30,12 @@ using namespace std;
 #include"error-display.hh"
 #include"user-options.hh"
 
-int Eval_Result::get_value()
+float Eval_Result::get_value()
 {
 	report_internal_error("Should not reach, Eval_Result : get_value");
 }
 
-void Eval_Result::set_value(int number)
+void Eval_Result::set_value(float number)
 {
 	report_internal_error("Should not reach, Eval_Result : set_value");
 }
@@ -62,16 +62,17 @@ Eval_Result_Value_Int::Eval_Result_Value_Int()
 Eval_Result_Value_Int::~Eval_Result_Value_Int()
 { }
 
-void Eval_Result_Value_Int::set_value(int number)
+void Eval_Result_Value_Int::set_value(float number)
 {
 	value = number;
 	defined = true;
 }
 
-int Eval_Result_Value_Int::get_value()
+float Eval_Result_Value_Int::get_value()
 {
 	return value;
 }
+
 
 void Eval_Result_Value_Int::set_variable_status(bool def)
 {
@@ -103,14 +104,14 @@ Eval_Result_Value_Float::Eval_Result_Value_Float()
 
 Eval_Result_Value_Float::~Eval_Result_Value_Float()
 { }
-
-void Eval_Result_Value_Float::set_value(int number)
+void Eval_Result_Value_Float::set_value(float number)
 {
 	value = number;
 	defined = true;
 }
 
-int Eval_Result_Value_Float::get_value()
+
+float Eval_Result_Value_Float::get_value()
 {
 	return value;
 }

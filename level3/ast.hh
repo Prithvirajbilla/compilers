@@ -31,7 +31,7 @@
 
 using namespace std;
 
-enum rop { LE, LT, GT, GE, NE, EQ};
+enum rop { LE, LT, GT, GE, NE, EQ,PLUS,MINUS,MULT,DIV,UNARY};
 
 class Ast;
 
@@ -39,13 +39,15 @@ class Ast
 {
 protected:
 	Data_Type node_data_type;
+	int data_type;
 public:
 	Ast();
 	~Ast();
 
 	virtual Data_Type get_data_type();
 	virtual bool check_ast(int line);
-
+	virtual void set_data_type(int value);
+	virtual int get_data_type_value();
 	virtual void print_ast(ostream & file_buffer) = 0;
 	virtual void print_value(Local_Environment & eval_env, ostream & file_buffer);
 
@@ -65,7 +67,8 @@ public:
 
 	Data_Type get_data_type();
 	bool check_ast(int line);
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	void print_ast(ostream & file_buffer);
 
 	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
@@ -81,7 +84,8 @@ public:
 	~Name_Ast();
 
 	Data_Type get_data_type();
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	void print_ast(ostream & file_buffer);
 
 	void print_value(Local_Environment & eval_env, ostream & file_buffer);
@@ -98,7 +102,8 @@ class Number_Ast:public Ast
 public:
 	Number_Ast(T number, Data_Type constant_data_type);
 	~Number_Ast();
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	Data_Type get_data_type();
 
 	void print_ast(ostream & file_buffer);
@@ -112,7 +117,8 @@ class Return_Ast:public Ast
 public:
 	Return_Ast();
 	~Return_Ast();
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	void print_ast(ostream & file_buffer);
 
 	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
@@ -126,7 +132,8 @@ public:
 	Goto_Ast(int a);
 
 	void print_ast(ostream & file_buffer);
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	int blocknum();
 
 	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
@@ -139,7 +146,8 @@ class Relational_Ast:public Ast
 	rop rel_oper;
 public:
 	Relational_Ast(Ast * temp_lhs, Ast * temp_rhs, rop a);
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	~Relational_Ast();
 
 	Data_Type get_data_type();
@@ -161,7 +169,8 @@ public:
 	IfCondition_Ast(Goto_Ast * temp_lhs, Goto_Ast * temp_rhs, Ast * cond);
 
 	~IfCondition_Ast();
-
+	void set_data_type(int value);
+	int get_data_type_value();
 	Data_Type get_data_type();
 
 	bool check_ast(int line);
@@ -173,4 +182,18 @@ public:
 	
 };
 
+class Typecast_Ast:public Ast
+{
+	Relational_Ast * typecast;
+
+public:
+	Typecast_Ast(Relational_Ast* temp_typecast,int type);
+
+	~Typecast_Ast();
+
+/*	Data_Type get_data_type();
+	bool check_ast(int line);
+	void print_ast(ostream & file_buffer);
+	Eval_Result & evaluate(Local_Environment & eval_env,ostream & file_buffer);
+*/};
 #endif

@@ -34,6 +34,7 @@ using namespace std;
 typedef enum
 {
 	int_result,
+	float_result,
 	void_result
 } Result_Enum;
 
@@ -46,8 +47,8 @@ protected:
 	Result_Enum result_type;
 
 public:
-	virtual int get_value();
-	virtual void set_value(int value);
+	virtual float get_value();
+	virtual void set_value(float value);
 
 	virtual bool is_variable_defined();
 	virtual void set_variable_status(bool def);
@@ -59,8 +60,8 @@ public:
 class Eval_Result_Value:public Eval_Result
 {
 public:
-	virtual void set_value(int number) = 0;
-	virtual int get_value() = 0;
+	virtual void set_value(float number) = 0;
+	virtual float get_value() = 0;
 
 	virtual bool is_variable_defined() = 0;
 	virtual void set_variable_status(bool def) = 0;
@@ -77,9 +78,8 @@ public:
 	Eval_Result_Value_Int();
 	~Eval_Result_Value_Int();
 
-	void set_value(int number);
-	int get_value();
-
+	void set_value(float number);
+	float get_value();
 	void set_variable_status(bool def);
 	bool is_variable_defined();
 
@@ -96,7 +96,7 @@ public:
 	~Eval_Result_Value_Float();
 
 	void set_value(float number);
-	int get_value();
+	float get_value();
 
 	void set_variable_status(bool def);
 	bool is_variable_defined();

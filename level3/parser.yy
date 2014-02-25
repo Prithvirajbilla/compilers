@@ -323,120 +323,90 @@ IFELSE:
 GOTO_exp:
 	GOTO basicblock_number ';'
 	{	
-		#if 0	
 		$$ = new Goto_Ast($2);
-		#endif
 	}
 ;
 
 conditional_exp:
 	conditional_exp OP2 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, NE);
-		#endif
 	}
 |
 	conditional_exp OP3 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, EQ);
-		#endif
 	}
 |	
 	conditional_exp OP4 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, GE);
-		#endif
 	}
 |
 	conditional_exp OP5 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, LE);
-		#endif
 	}
 |
 	conditional_exp OP6 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, GT);
-		#endif
 	}
 |
 	conditional_exp OP7 conditional_exp
 	{
-		#if 0
 		$$ = new Relational_Ast($1, $3, LT);
-		#endif
 	}
 |	
 	conditional_exp '+' conditional_exp
 	{
-
+		$$ = new Relational_Ast($1,$3,PLUS);
 	}
 |	
 	conditional_exp '-' conditional_exp
 	{
-
+		$$ = new Relational_Ast($1,$3,MINUS);
 	}
 |	
 	conditional_exp '*' conditional_exp
 	{
-
+		$$ = new Relational_Ast($1,$3,MULT);
 	}
 |	
 	conditional_exp '/' conditional_exp
 	{
-
+		$$ = new Relational_Ast($1,$3,DIV);
 	}
 |	
 	'-' conditional_exp
 	{
-
+		$$ = new Relational_Ast($2,$2,UNARY);
 	}
 |
 	variable
 	{
-		#if 0
 		$$ = $1;
-		#endif
 	}
 |
 	constant
 	{
-		#if 0
 		$$ = $1;
-		#endif
 	}
 
-|	'(' FLOAT ')' conditional_exp
+/*|	'(' FLOAT ')' conditional_exp
 	{
-		#if 0
-
-		#endif
+		$$ = new Typecast_Ast($4,float_data_type);
 	}
-
-|	'(' DOUBLE ')' conditional_exp
+|	
+	'(' INTEGER ')' conditional_exp
 	{
-		#if 0
-		
-		#endif
-	}
-|	'(' INTEGER ')' conditional_exp
-	{
-		#if 0
-		
-		#endif
+		$$ = new Typecast_Ast($4,int_data_type);
 	}
 |	'(' conditional_exp ')'
 	{
-		#if 0
-
-		#endif
+		$$ = $2;
 	}
-
+*/
 ;
 
 

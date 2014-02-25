@@ -58,10 +58,10 @@ return		{
             }
 
 [-]?[0-9]+[.][0-9]+ {
-								store_token_name("FNUM");
-								ParserBase::STYPE__ * val = getSval();
-								val->float_value = atoi(matched().c_str());
-								return Parser::FLOAT_NUMBER;
+						store_token_name("FNUM");
+						ParserBase::STYPE__ * val = getSval();
+						val->float_value = atof(matched().c_str());
+						return Parser::FLOAT_NUMBER;
 					}
 
 [-]?[[:digit:]_]+ 	{ 
