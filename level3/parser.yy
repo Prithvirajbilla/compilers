@@ -54,10 +54,10 @@
 %token ELSE
 %token GOTO
 %token ASSIGN_OP
-%left '-' '+'
-%left '/' '*'
 %left OP2 OP3
 %left OP7 OP5 OP6 OP4
+%left '-' '+'
+%left '/' '*'
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
 %type <basic_block_list> basic_block_list
@@ -69,6 +69,7 @@
 %type <ast> constant
 %type <ast> IFELSE
 %type <goto_ast> GOTO_exp
+%type <ast> unary_exp
 %type <ast> conditional_exp
 %start program
 
@@ -331,56 +332,94 @@ conditional_exp:
 	conditional_exp OP2 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, NE);
+		int line = get_line_number();
+		$$->check_ast(line);
 	}
 |
 	conditional_exp OP3 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, EQ);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |	
 	conditional_exp OP4 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, GE);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |
 	conditional_exp OP5 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, LE);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |
 	conditional_exp OP6 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, GT);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |
 	conditional_exp OP7 conditional_exp
 	{
 		$$ = new Relational_Ast($1, $3, LT);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |	
 	conditional_exp '+' conditional_exp
 	{
 		$$ = new Relational_Ast($1,$3,PLUS);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |	
 	conditional_exp '-' conditional_exp
 	{
 		$$ = new Relational_Ast($1,$3,MINUS);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
 |	
 	conditional_exp '*' conditional_exp
 	{
 		$$ = new Relational_Ast($1,$3,MULT);
+		int line = get_line_number();
+		$$->check_ast(line);
+
 	}
+
 |	
 	conditional_exp '/' conditional_exp
 	{
 		$$ = new Relational_Ast($1,$3,DIV);
+		int line = get_line_number();
+		$$->check_ast(line);
 	}
-|	
-	'-' conditional_exp
+|
+	unary_exp
+	{
+		$$ = $1;
+	}
+;
+
+unary_exp:
+	'-' unary_exp
 	{
 		$$ = new Relational_Ast($2,$2,UNARY);
+		int line = get_line_number();
+		$$->check_ast(line);
 	}
 |
 	variable
@@ -393,17 +432,17 @@ conditional_exp:
 		$$ = $1;
 	}
 
-|	'(' FLOAT ')' conditional_exp
+|	'(' FLOAT ')' unary_exp
 	{
 		$$ = new Typecast_Ast($4,float_data_type);
 	}
 |	
-	'(' INTEGER ')' conditional_exp
+	'(' INTEGER ')' unary_exp
 	{
 		$$ = new Typecast_Ast($4,int_data_type);
 	}
 |
-	'(' DOUBLE ')' conditional_exp
+	'(' DOUBLE ')' unary_exp
 	{
 		$$ = new Typecast_Ast($4,float_data_type);
 	}
@@ -413,7 +452,6 @@ conditional_exp:
 		$$ = $2;
 	}
 ;
-
 
 variable:
 	NAME

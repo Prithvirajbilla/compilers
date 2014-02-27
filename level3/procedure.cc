@@ -147,10 +147,11 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	while (current_bb)
 	{
 		result = &(current_bb->evaluate(eval_env, file_buffer));
-		if(result->get_result_enum() == 0)
-			current_bb = get_next_bb(*current_bb);	
+		if(result->get_result_enum() == 2)
+			current_bb = get_bb_at(*current_bb,result->get_value());
 		else
-			current_bb = get_bb_at(*current_bb,result->get_value());	
+			current_bb = get_next_bb(*current_bb);
+				
 	}
 
 	file_buffer << "\n\n";

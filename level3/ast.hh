@@ -181,7 +181,7 @@ public:
 class Typecast_Ast:public Ast
 {
 	Ast * typecast;
-
+	Data_Type prev;
 public:
 	Typecast_Ast(Ast * temp,Data_Type type);
 	~Typecast_Ast();

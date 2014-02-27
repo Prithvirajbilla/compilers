@@ -173,7 +173,7 @@ void Name_Ast::print_value(Local_Environment & eval_env, ostream & file_buffer)
 			file_buffer << (int)loc_var_val->get_value() << "\n";
 		else if(loc_var_val->get_result_enum() == float_result)
 		{
-			file_buffer<<loc_var_val->get_value() << "\n";
+			file_buffer<< setiosflags(ios::fixed) << setprecision(2)<<loc_var_val->get_value() << "\n";
 		}
 		else
 			report_internal_error("Result type can only be int and float");
@@ -193,7 +193,7 @@ void Name_Ast::print_value(Local_Environment & eval_env, ostream & file_buffer)
 			if(glob_var_val == NULL)
 				file_buffer << "0\n";
 			else
-				file_buffer << glob_var_val->get_value() << "\n";
+				file_buffer<< setiosflags(ios::fixed) << setprecision(2)<< glob_var_val->get_value() << "\n";
 		}
 		else
 			report_internal_error("Result type can only be int and float");
@@ -266,7 +266,7 @@ void Number_Ast<DATA_TYPE>::print_ast(ostream & file_buffer)
 	if(node_data_type == float_data_type)
 		file_buffer << "Num : "<< setiosflags(ios::fixed) << setprecision(2)<< constant;
 	else
-		file_buffer << "Num : "<< constant;
+		file_buffer << "Num : "<< (int)constant;
 }
 
 template <class DATA_TYPE>
@@ -306,6 +306,7 @@ Eval_Result & Return_Ast::evaluate(Local_Environment & eval_env, ostream & file_
 {
 	Eval_Result & result = *new Eval_Result_Value_Int();
 	file_buffer<<AST_SPACE<<"Return <NOTHING>\n";
+	result.set_result_enum(void_result);
 	return result;
 }
 
@@ -378,7 +379,11 @@ bool Relational_Ast::check_ast(int line)
 		node_data_type = lhs->get_data_type();
 		return true;
 	}
-
+	else if(lhs->get_data_type() == float_data_type || rhs->get_data_type() == float_data_type)
+	{
+		node_data_type = float_data_type;
+		return true;
+	}
 	report_error("Relational Expression lhs and rhs data types doesn't match", line);
 }
 
@@ -451,7 +456,7 @@ void Relational_Ast::print_ast(ostream & file_buffer)
 		{
 			file_buffer << "\n" << AST_SPACE << "Arith: ";
 			file_buffer<<"UMINUS\n";
-			file_buffer << "\n" << AST_NODE_SPACE << "   RHS (";
+			file_buffer << "\n" << AST_NODE_SPACE << "   LHS (";
 			rhs->print_ast(file_buffer);
 			file_buffer << ")";
 			return ;
@@ -531,15 +536,23 @@ Eval_Result & Relational_Ast::evaluate(Local_Environment & eval_env, ostream & f
 			break;
 		}
 	}
-	if(node_data_type == int_data_type)
+	if(node_data_type == float_data_type)
 	{
-		Eval_Result & result  = * new Eval_Result_Value_Int();
+
+		Eval_Result & result = * new Eval_Result_Value_Float();
 		result.set_value(answer);
 		return result;
-
+	}
+	else if (node_data_type == int_data_type)
+	{
+		int k = (int) answer;
+		Eval_Result & result  = * new Eval_Result_Value_Int();
+		result.set_value(k);
+		return result;
 	}
 	else
 	{
+		file_buffer<<" "<<node_data_type<<endl;
 		Eval_Result & result = * new Eval_Result_Value_Float();
 		result.set_value(answer);
 		return result;
@@ -623,8 +636,8 @@ Eval_Result & IfCondition_Ast::evaluate(Local_Environment & eval_env, ostream & 
 Typecast_Ast::Typecast_Ast(Ast * temp_lhs,Data_Type data_type)
 {
 	typecast = temp_lhs;
+	prev = node_data_type;
 	node_data_type = data_type;
-	
 }
 
 Typecast_Ast::~Typecast_Ast()
@@ -653,8 +666,9 @@ Eval_Result & Typecast_Ast::evaluate(Local_Environment & eval_env, ostream & fil
 {
 	float answer  = typecast->evaluate(eval_env, file_buffer).get_value();
 	if(node_data_type == int_data_type){
+		int k = answer;
 		Eval_Result & result = *new Eval_Result_Value_Int();
-		result.set_value(answer);
+		result.set_value(k);
 		return result;
 	}
 	else if(node_data_type == float_data_type){
