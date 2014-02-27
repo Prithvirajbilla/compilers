@@ -1,0 +1,27 @@
+
+;; Function main (main)
+
+
+main ()
+{
+  float c;
+  int g;
+  int f;
+  int e;
+  int d;
+  int b;
+  int a;
+  float D.1595;
+  float D.1594;
+
+<bb 2>:
+  b = 3;
+  c = 2.2999999523162841796875e+0;
+  D.1594 = (float) b;
+  D.1595 = D.1594 / c;
+  a = (int) D.1595;
+  return;
+
+}
+
+

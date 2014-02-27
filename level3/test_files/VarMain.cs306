@@ -1,0 +1,15 @@
+
+;; Function main (main)
+
+
+main ()
+{
+  int Main;
+
+<bb 2>:
+  Main = 5;
+  return;
+
+}
+
+

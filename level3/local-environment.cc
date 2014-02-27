@@ -99,7 +99,7 @@ Eval_Result_Value_Float::Eval_Result_Value_Float()
 {
 	value = 0;
 	defined = false;
-	result_type = int_result;
+	result_type = float_result;
 }
 
 Eval_Result_Value_Float::~Eval_Result_Value_Float()

@@ -1,0 +1,12 @@
+
+;; Function main (main)
+
+
+main ()
+{
+<bb 2>:
+  goto <bb 2>;
+
+}
+
+

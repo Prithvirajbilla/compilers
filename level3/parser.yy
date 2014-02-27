@@ -54,8 +54,8 @@
 %token ELSE
 %token GOTO
 %token ASSIGN_OP
-%left '/' '*'
 %left '-' '+'
+%left '/' '*'
 %left OP2 OP3
 %left OP7 OP5 OP6 OP4
 %type <symbol_table> declaration_statement_list
@@ -393,7 +393,7 @@ conditional_exp:
 		$$ = $1;
 	}
 
-/*|	'(' FLOAT ')' conditional_exp
+|	'(' FLOAT ')' conditional_exp
 	{
 		$$ = new Typecast_Ast($4,float_data_type);
 	}
@@ -402,11 +402,16 @@ conditional_exp:
 	{
 		$$ = new Typecast_Ast($4,int_data_type);
 	}
+|
+	'(' DOUBLE ')' conditional_exp
+	{
+		$$ = new Typecast_Ast($4,float_data_type);
+	}
+
 |	'(' conditional_exp ')'
 	{
 		$$ = $2;
 	}
-*/
 ;
 
 

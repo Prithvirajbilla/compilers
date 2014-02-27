@@ -1,0 +1,26 @@
+
+;; Function main (main)
+
+
+main ()
+{
+  int c;
+  int b;
+  int a;
+  int D.1592;
+  int D.1591;
+  int D.1590;
+
+<bb 2>:
+  a = 2;
+  b = 4;
+  c = 3;
+  D.1590 = b * c;
+  D.1591 = -a;
+  D.1592 = D.1590 / D.1591;
+  a = D.1592 + a;
+  return;
+
+}
+
+
