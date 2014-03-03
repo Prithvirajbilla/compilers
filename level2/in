@@ -1,0 +1,152 @@
+make: `cfglp' is up to date.
+ArithBrckt.c
+Arith.c
+ArithFloat.c
+ArithIntFloat.c
+37c37
+<          a : 2.00
+---
+>          a : 2
+Brckt.c
+Const.c
+66c63
+<          a : 11.00
+---
+>          a : 11
+ContDoWhile.c
+Decl1BB.c
+DeclDef1BB.c
+EmptyIf.c
+FloatRelArith.c
+FloatUnary.c
+27,30d27
+< 
+<                LHS (
+<          Arith: UMINUS
+< 
+36,37c32,35
+< 
+<                LHS (Name : j)
+---
+>                LHS (
+>             Arith: UMINUS
+>                LHS (Name : j))
+>                RHS (Name : a))
+39d36
+<                RHS (Name : a)))
+Glob.c
+97c92
+<          f : 3.00
+---
+>          f : 3
+100c95
+<          a : 31.00
+---
+>          a : 31
+102c97
+<          c : 2.00
+---
+>          c : 2
+GlobDeclDef.c
+GlobLocSameVar.c
+GlobNoDeclNoDef1BB.c
+GlobRemov.c
+GlobTernaryInIfLoop.c
+IfArith.c
+IfFloatArith.c
+IfFloatRelArith.c
+IfIntFloat.c
+63c62
+<          a : 3.00
+---
+>          a : 3
+IfIntFloatRelArith.c
+82a81,82
+>             Condition: NE
+>                LHS (
+87,89d85
+<          Condition: NE
+< 
+<                LHS (
+101,102c94,95
+<                RHS (Name : e)))
+<                RHS (Name : a))
+---
+>                RHS (Name : e))))
+>                RHS (Name : a)
+104a98
+>          Condition True : Goto (BB 3)
+106c100
+<          Condition False : Goto (BB 4)
+---
+>       Basic Block: 3
+108d101
+<       Basic Block: 4
+110c103
+<             LHS (Name : e)
+---
+>             LHS (Name : a)
+112a106,108
+>                LHS (Name : a)
+>                RHS (Num : 1))
+>          a : 6
+114,117d109
+<                LHS (Name : e)
+<                RHS (Num : 1.00))
+< 
+<          e : 3.30
+118a111,113
+>          Goto statement:
+>             Successor: 5
+>          GOTO (BB 5)
+125,129c121,125
+<          a : 5.00
+<          b : 3.00
+<          c : 4.00
+<          d : 5.00
+<          e : 3.30
+---
+>          a : 6
+>          b : 3
+>          c : 4
+>          d : 5
+>          e : 2.30
+IfRelArith.c
+iftmp.c
+IfUnary.c
+IntInFloat.c
+32c33
+<          a : 3.00
+---
+>          a : 3
+MultGlob.c
+MultRel.c
+MultRelInTernary.c
+NestedIf.c
+NoDeclNoDef1BB.c
+NotEqInIf.c
+RelArithBrckt.c
+RelArith.c
+RelInCond.c
+RelInIfNotEq.c
+RelInStmt.c
+RetInFor.c
+TempInIfRel.c
+test.c
+39c40
+<          a : 3.00
+---
+>          a : 3
+TwoRelInTernary.c
+TypeCast.c
+41,42c41,42
+<          a : 1.00
+<          b : 3.00
+---
+>          a : 1
+>          b : 3
+Unary.c
+UnaryPlus.c
+UserIfTmp.c
+VarMain.c
+zInfiniteLoop.c

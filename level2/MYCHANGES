@@ -16,6 +16,30 @@ parser.yy
 ============
 
 1) added precedence order to the tokens;
-2) added new rules to the declarative statements and constants.
-3) Changed the production rule for conditional_exp by making it ambiguous
-	conditional_exp -> conditional_exp '+' conditional_exp
+2) Changed some of the previous grammer rules related to the unary expressions
+
+localenvironment.hh
+=====================
+Added a new element float_result to the enum Result_enum.
+Added declarations of a new class Eval_Result_value_Float and changed the decalrations of Eval_Result.
+
+
+localenvironment.cc
+====================
+Implemented the class Eval_Result_Value_Float and its functions.
+Changed the print function which prints the local variables such that it prints the floating point decimals
+
+ast.hh
+========
+Added new Class Typecast_Ast for the typecasting expressions.
+
+ast.cc
+=======
+implemented Typecast_Ast class functions, changed the print functions such that it prints the floating point decimal.
+Added '+','-','*','/' evaulte_result functions.
+Changed the print_ast functions of Number_Ast and Name_Ast.
+
+procedure.cc
+=============
+changed the evaluate function such that it behaves correctly after the changes made to Result_enum.
+

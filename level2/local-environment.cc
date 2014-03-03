@@ -30,12 +30,12 @@ using namespace std;
 #include"error-display.hh"
 #include"user-options.hh"
 
-int Eval_Result::get_value()
+float Eval_Result::get_value()
 {
 	report_internal_error("Should not reach, Eval_Result : get_value");
 }
 
-void Eval_Result::set_value(int number)
+void Eval_Result::set_value(float number)
 {
 	report_internal_error("Should not reach, Eval_Result : set_value");
 }
@@ -62,16 +62,17 @@ Eval_Result_Value_Int::Eval_Result_Value_Int()
 Eval_Result_Value_Int::~Eval_Result_Value_Int()
 { }
 
-void Eval_Result_Value_Int::set_value(int number)
+void Eval_Result_Value_Int::set_value(float number)
 {
 	value = number;
 	defined = true;
 }
 
-int Eval_Result_Value_Int::get_value()
+float Eval_Result_Value_Int::get_value()
 {
 	return value;
 }
+
 
 void Eval_Result_Value_Int::set_variable_status(bool def)
 {
@@ -94,7 +95,49 @@ Result_Enum Eval_Result_Value_Int::get_result_enum()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
+Eval_Result_Value_Float::Eval_Result_Value_Float()
+{
+	value = 0;
+	defined = false;
+	result_type = float_result;
+}
 
+Eval_Result_Value_Float::~Eval_Result_Value_Float()
+{ }
+void Eval_Result_Value_Float::set_value(float number)
+{
+	value = number;
+	defined = true;
+}
+
+
+float Eval_Result_Value_Float::get_value()
+{
+	return value;
+}
+
+void Eval_Result_Value_Float::set_variable_status(bool def)
+{
+	defined = def;
+}
+
+bool Eval_Result_Value_Float::is_variable_defined()
+{
+	return defined;
+}
+
+void Eval_Result_Value_Float::set_result_enum(Result_Enum res)
+{
+	result_type = res;
+}
+
+Result_Enum Eval_Result_Value_Float::get_result_enum()
+{
+	return result_type;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
 Local_Environment::Local_Environment()
 {}
 
@@ -112,6 +155,8 @@ void Local_Environment::print(ostream & file_buffer)
 			if (vi->is_variable_defined() == false)
 				file_buffer << VAR_SPACE << (*i).first << " : undefined" << "\n";
 		
+			else if(vi->get_result_enum() == int_result)
+				file_buffer << VAR_SPACE << (*i).first << " : " << (int)vi->get_value() << "\n";
 			else
 				file_buffer << VAR_SPACE << (*i).first << " : " << vi->get_value() << "\n";
 		}
