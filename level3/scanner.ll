@@ -35,11 +35,14 @@ float 	{
              store_token_name("FLOAT");
              return Parser::FLOAT;
 
-        }
-        
+        }    
 double  {
 			store_token_name("DOUBLE");
 			return Parser::DOUBLE;
+		}
+void    {
+			store_token_name("VOID");
+			return Parser::VOID;
 		}
 
 return		{ 

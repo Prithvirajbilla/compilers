@@ -49,7 +49,7 @@
 %token <integer_value> basicblock_number
 %token <float_value> FLOAT_NUMBER
 %token <string_value> NAME
-%token RETURN INTEGER FLOAT DOUBLE
+%token RETURN INTEGER FLOAT DOUBLE VOID
 %token IF 	
 %token ELSE
 %token GOTO
@@ -93,6 +93,10 @@ program:
 		delete $1;
 		#endif
 	}
+	program
+	{
+
+	}
 |
 	procedure_name
 	{
@@ -102,7 +106,7 @@ program:
 	}
 	procedure_body
 	{
-	#if 0	
+		#if 0	
 		program_object.set_procedure_map(current_procedure, get_line_number());
 		#endif
 	}
@@ -188,7 +192,6 @@ declaration_statement_list:
 			}
 
 			$$ = $1;
-			#endif
 		}
 
 		else
@@ -221,6 +224,31 @@ declaration_statement:
 		#if 0
 		$$ = new Symbol_Table_Entry(*$2,float_data_type);
 		#endif
+	}
+|
+	INTEGER NAME '(' ')' ';'
+	{
+
+	}
+|
+	FLOAT NAME '(' ')' ';'
+	{
+
+	}
+|
+	DOUBLE NAME '(' ')' ';'
+	{
+
+	}
+|
+	VOID NAME '(' ')' ';'
+	{
+
+	}
+|
+	NAME '(' ')' ';'
+	{
+
 	}
 ;
 
@@ -358,10 +386,14 @@ assignment_statement:
 		$$ = new Assignment_Ast($1, $3);
 		#endif
 	}
+|
+	NAME '(' ')' ';'
+	{
+		
+	}
 ;
 IFELSE:
-	IF '(' conditional_e
-		#endifxp ')' GOTO_exp ELSE GOTO_exp
+	IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
 	{	
 		#if 0
 		$$ = new IfCondition_Ast($5, $7, $3);
