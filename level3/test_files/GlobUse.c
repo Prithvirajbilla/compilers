@@ -1,12 +1,12 @@
 int a;
 main()
 {
-	int a = 3;
-	a = 10;
+	a = 3;
 	fn();
+	a = 4;
 }
 
 fn()
 {
-	int a = 6;
+	a = 10;
 }

@@ -20,26 +20,26 @@
 
     This  version  is the  interpreter-only  version.  The version  with
     compilation option will be made available soon. At the  moment cfglp  
-    accepts level 2  language that  defines simple cfg constructs. These 
+    accepts level 3  language that  defines simple cfg constructs. These 
     have been specified on the website.
 
-    To generate test cases which can be used as input to cfglp Level-2
+    To generate test cases which can be used as input to cfglp Level-3
     Interpreter:
     (Replace {cfglp} with cfglp32 or cfglp64 depending on the configuration
     of your machine)
 
-    -- Make your current directory as level-2-32bits/ or level-2-64bits/
+    -- Make your current directory as level-3-32bits/ or level-3-64bits/
 
     -- To generate .cfg file for valid test.c file in test_files:
          - Run
               make -f Makefile.cfg FILE=test.c
          - test.cs306.cfg file is generated in the test_files directory
 
-    To run the cfglp Level-2 Interpreter, follow the steps given below:
+    To run the cfglp Level-3 Interpreter, follow the steps given below:
 
-    -- Make your current directory as level-2-32bits/ or level-2-64bits
+    -- Make your current directory as level-3-32bits/ or level-3-64bits
 
-    -- To test the cfglp Level-2 Interpreter using a valid test.cs306.cfg
+    -- To test the cfglp Level-3 Interpreter using a valid test.cs306.cfg
        (generated using the above steps) in test_files:
          - Run
               make -f Makefile.cfglp
@@ -51,7 +51,7 @@
               ./{cfglp} --help
          - Observe the output
 
-    -- To test the cfglp Level-2 Interpreter using an invalid test.ecfg 
+    -- To test the cfglp Level-3 Interpreter using an invalid test.ecfg 
        (pre-existing) in test_files:
          - Run
               make -f Makefile.cfglp
@@ -63,7 +63,7 @@
              ./{cfglp} --help
          - Observe the output
 
-    To restore the original files in level-2-32bits/ or level-2-64bits/ directory:
+    To restore the original files in level-3-32bits/ or level-3-64bits/ directory:
 
     -- Run
          make -f Makefile.cfglp clean
