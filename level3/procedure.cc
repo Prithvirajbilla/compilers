@@ -82,7 +82,7 @@ Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 
 void Procedure::print_ast(ostream & file_buffer)
 {
-	file_buffer << PROC_SPACE << "Procedure: main" << "\n";
+	file_buffer << PROC_SPACE << "Procedure: "<<name<< "\n";
 
 	list<Basic_Block *>::iterator i;
 	for(i = basic_block_list.begin(); i != basic_block_list.end(); i++)
@@ -161,3 +161,7 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	return *result;
 }
 
+void Procedure :: set_argument_list(Symbol_Table & new_list)
+{
+	argument_list = new_list;
+}

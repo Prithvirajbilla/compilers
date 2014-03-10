@@ -1,0 +1,9 @@
+*.cfg
+*.eval
+*.tok
+*.o
+*.out
+*parserbase.h
+*parser.cc
+*scannerbase.h
+*scanner.cc
