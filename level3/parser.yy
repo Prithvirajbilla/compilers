@@ -76,28 +76,39 @@
 %%
 
 program:
-	declaration_statement_list procedure_name
+	declaration_statement_list 
 	{
-		#if 0
-		program_object.set_global_table(*$1);
-		#endif
-	}
-	procedure_body
-	{
-		#if 0
-		program_object.set_procedure_map(current_procedure, get_line_number());
 
-		if ($1)
-			$1->global_list_in_proc_map_check(get_line_number());
-
-		delete $1;
-		#endif
 	}
-	program
+	other_program
 	{
 
 	}
 |
+	other_program
+	{
+		
+	}
+;
+
+other_program:
+	procedure_name
+	{
+		
+		// return_statement_used_flag = false;				 No return statement in the current procedure till now
+		
+	}
+	procedure_body
+	{
+		#if 0	
+		program_object.set_procedure_map(current_procedure, get_line_number());
+		#endif
+	}
+|
+	other_program
+	{
+
+	}
 	procedure_name
 	{
 		
@@ -119,8 +130,12 @@ procedure_name:
 		current_procedure = new Procedure(void_data_type, *$1);
 		#endif
 	}
-;
+|
+	NAME '(' argument_list ')'
+	{
 
+	}
+;
 procedure_body:
 	'{' declaration_statement_list
 	{
@@ -226,32 +241,79 @@ declaration_statement:
 		#endif
 	}
 |
-	INTEGER NAME '(' ')' ';'
-	{
-
-	}
-|
-	FLOAT NAME '(' ')' ';'
-	{
-
-	}
-|
-	DOUBLE NAME '(' ')' ';'
-	{
-
-	}
-|
-	VOID NAME '(' ')' ';'
-	{
-
-	}
-|
-	NAME '(' ')' ';'
+	function_decl ';'
 	{
 
 	}
 ;
+function_decl:
+	INTEGER NAME '(' argument_list ')' 
+	{
 
+	}
+|
+	FLOAT NAME '(' argument_list ')' 
+	{
+
+	}
+|
+	DOUBLE NAME '(' argument_list ')' 
+	{
+
+	}
+|
+	VOID NAME '(' argument_list ')' 
+	{
+
+	}
+|
+	INTEGER NAME '(' ')' 
+	{
+
+	}
+|
+	FLOAT NAME '(' ')' 
+	{
+
+	}
+|
+	DOUBLE NAME '(' ')' 
+	{
+
+	}
+|
+	VOID NAME '(' ')' 
+	{
+
+	}
+;
+argument_list:
+	argument
+	{
+
+	}
+|
+	argument_list ',' argument
+	{
+
+	}
+;
+argument:
+	INTEGER NAME
+	{
+
+	}
+|
+	FLOAT NAME
+	{
+
+	}
+|
+	DOUBLE NAME
+	{
+
+	}
+;
 basic_block_list:
 	basic_block_list basic_block
 	{
@@ -333,6 +395,21 @@ executable_statement_list:
 		
 	}
 |
+	assignment_statement_list RETURN conditional_exp';'
+	{
+		#if 0
+		Ast * ret = new Return_Ast();
+		if ($1 != NULL)
+			$$ = $1;
+
+		else
+			$$ = new list<Ast *>;
+
+		$$->push_back(ret);
+		#endif
+		
+	}
+|
 	assignment_statement_list IFELSE
 	{	
 		#if 0
@@ -389,7 +466,30 @@ assignment_statement:
 |
 	NAME '(' ')' ';'
 	{
-		
+
+	}
+|
+	NAME '(' argument_in_function_list ')' ';'
+	{
+
+	}	
+;
+argument_in_function_list:
+	argument_in_function ',' argument_in_function_list
+	{
+
+	}
+|
+	argument_in_function
+	{
+
+	}
+
+;	
+argument_in_function:
+	conditional_exp
+	{
+
 	}
 ;
 IFELSE:
@@ -541,6 +641,16 @@ unary_exp:
 		$$ = $1;
 		#endif
 	}
+|
+	NAME '(' ')'
+	{
+
+	}
+|
+	NAME '(' argument_in_function_list ')'
+	{
+
+	}	
 
 |	'(' FLOAT ')' unary_exp
 	{

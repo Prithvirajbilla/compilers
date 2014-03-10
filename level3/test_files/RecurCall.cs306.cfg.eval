@@ -1,0 +1,282 @@
+Evaluating Program
+   Global Variables (before evaluating):
+enter proc
+   Evaluating Procedure << main >>
+      Local Variables (before evaluating):
+         a : undefined
+         b : undefined
+
+enter bb
+
+      Basic Block: 2
+enter ast
+enter rhs eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : a)
+            RHS (Num : 2)
+         a : 2
+
+exit ast
+enter ast
+enter rhs eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : b)
+            RHS (Num : 5)
+         b : 5
+
+exit ast
+enter ast
+enter param eval
+exit param eval
+enter fn eval
+   Evaluating Procedure << fn >>
+      Local Variables (before evaluating):
+         c : undefined
+         d : 2
+
+enter bb
+
+      Basic Block: 2
+enter ast
+enter rhs eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (Name : d)
+         c : 2
+
+exit ast
+enter ast
+
+         If_Else statement:
+            Condition: EQ
+               LHS (Name : d)
+               RHS (Num : 0)enter cond eval
+enter lhs rhs eval
+exit lhs rhs eval
+exit cond eval
+exit ast
+
+            True Successor: 3
+            False Successor: 4
+         Condition False : Goto (BB 4)
+exit bb
+enter bb
+
+      Basic Block: 4
+enter ast
+enter param eval
+enter arith eval
+exit arith eval
+exit param eval
+enter fn eval
+   Evaluating Procedure << fn >>
+      Local Variables (before evaluating):
+         c : undefined
+         d : 1
+
+enter bb
+
+      Basic Block: 2
+enter ast
+enter rhs eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (Name : d)
+         c : 1
+
+exit ast
+enter ast
+
+         If_Else statement:
+            Condition: EQ
+               LHS (Name : d)
+               RHS (Num : 0)enter cond eval
+enter lhs rhs eval
+exit lhs rhs eval
+exit cond eval
+exit ast
+
+            True Successor: 3
+            False Successor: 4
+         Condition False : Goto (BB 4)
+exit bb
+enter bb
+
+      Basic Block: 4
+enter ast
+enter param eval
+enter arith eval
+exit arith eval
+exit param eval
+enter fn eval
+   Evaluating Procedure << fn >>
+      Local Variables (before evaluating):
+         c : undefined
+         d : 0
+
+enter bb
+
+      Basic Block: 2
+enter ast
+enter rhs eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (Name : d)
+         c : 0
+
+exit ast
+enter ast
+
+         If_Else statement:
+            Condition: EQ
+               LHS (Name : d)
+               RHS (Num : 0)enter cond eval
+enter lhs rhs eval
+exit lhs rhs eval
+exit cond eval
+exit ast
+
+            True Successor: 3
+            False Successor: 4
+         Condition True : Goto (BB 3)
+exit bb
+enter bb
+
+      Basic Block: 3
+enter ast
+
+         Goto statement:exit ast
+
+            Successor: 5
+         GOTO (BB 5)
+exit bb
+enter bb
+
+      Basic Block: 5
+enter ast
+enter rhs eval
+enter arith eval
+exit arith eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (
+            Arith: PLUS
+               LHS (Name : d)
+               RHS (Num : 1000))
+         c : 1000
+
+exit ast
+enter ast
+
+         RETURN <NOTHING>
+exit ast
+exit bb
+
+
+      Local Variables (after evaluating) Function: << fn >>
+         c : 1000
+         d : 0
+exit fn eval
+exit ast
+exit bb
+enter bb
+
+      Basic Block: 5
+enter ast
+enter rhs eval
+enter arith eval
+exit arith eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (
+            Arith: PLUS
+               LHS (Name : d)
+               RHS (Num : 1000))
+         c : 1001
+
+exit ast
+enter ast
+
+         RETURN <NOTHING>
+exit ast
+exit bb
+
+
+      Local Variables (after evaluating) Function: << fn >>
+         c : 1001
+         d : 1
+exit fn eval
+exit ast
+exit bb
+enter bb
+
+      Basic Block: 5
+enter ast
+enter rhs eval
+enter arith eval
+exit arith eval
+exit rhs eval
+enter lhs eval
+exit lhs eval
+
+         Asgn:
+            LHS (Name : c)
+            RHS (
+            Arith: PLUS
+               LHS (Name : d)
+               RHS (Num : 1000))
+         c : 1002
+
+exit ast
+enter ast
+
+         RETURN <NOTHING>
+exit ast
+exit bb
+
+
+      Local Variables (after evaluating) Function: << fn >>
+         c : 1002
+         d : 2
+exit fn eval
+exit ast
+enter ast
+
+         RETURN <NOTHING>
+exit ast
+exit bb
+
+
+      Local Variables (after evaluating) Function: << main >>
+         a : 2
+         b : 5
+exit proc
+   Global Variables (after evaluating):

@@ -8,38 +8,19 @@ Filename:
 
 scanner.ll
 ==========
-1. added new tokens for all the arithmetic operators "+","-","/","*"
-2. added new token "float", "double". to the language
-
+1. added new tokens "void" and ","
+2. added "," in the metachar section
 
 parser.yy
 ============
 
-1) added precedence order to the tokens;
-2) Changed some of the previous grammer rules related to the unary expressions
+1) changed the program production rules
+program => declaration_statement other_program
 
-localenvironment.hh
-=====================
-Added a new element float_result to the enum Result_enum.
-Added declarations of a new class Eval_Result_value_Float and changed the decalrations of Eval_Result.
+other_program => procedure_name procedure_body | other_program procedure_name procedure_body
 
+2) Changed the return statement
 
-localenvironment.cc
-====================
-Implemented the class Eval_Result_Value_Float and its functions.
-Changed the print function which prints the local variables such that it prints the floating point decimals
+3) Added function declarations to the declaration_stmt list
 
-ast.hh
-========
-Added new Class Typecast_Ast for the typecasting expressions.
-
-ast.cc
-=======
-implemented Typecast_Ast class functions, changed the print functions such that it prints the floating point decimal.
-Added '+','-','*','/' evaulte_result functions.
-Changed the print_ast functions of Number_Ast and Name_Ast.
-
-procedure.cc
-=============
-changed the evaluate function such that it behaves correctly after the changes made to Result_enum.
-
+4) added funtion calls to the executable_stmt_list and in the conditional_exp

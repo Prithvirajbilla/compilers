@@ -50,7 +50,7 @@ return		{
 			return Parser::RETURN; 
 		}
 
-[:{}();]	{
+[:{}();,]	{
 			store_token_name("META CHAR");
 			return matched()[0];
 		}
