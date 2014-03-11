@@ -113,12 +113,15 @@ void Symbol_Table::create(Local_Environment & local_global_variables_table)
 /////////////////////////////////////////////////////////////
 
 Symbol_Table_Entry::Symbol_Table_Entry()
-{}
+{
+	function = false;
+}
 
 Symbol_Table_Entry::Symbol_Table_Entry(string & name, Data_Type new_data_type)
 {
 	variable_name = name;
 	variable_data_type = new_data_type;
+	function = false;
 }
 
 Symbol_Table_Entry::~Symbol_Table_Entry()
@@ -132,4 +135,13 @@ Data_Type Symbol_Table_Entry::get_data_type()
 string Symbol_Table_Entry::get_variable_name()
 {
 	return variable_name;
+}
+
+bool Symbol_Table_Entry::get_type()
+{
+	return function;
+}
+void Symbol_Table_Entry::set_type(bool b)
+{	
+	function = b;
 }

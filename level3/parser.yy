@@ -43,6 +43,7 @@
 	Basic_Block * basic_block;
 	list<Basic_Block *> * basic_block_list;
 	Procedure * procedure;
+	list<Symbol_Table_Entry *> * symbol_table_entry_list;
 };
 
 %token <integer_value> INTEGER_NUMBER
@@ -60,7 +61,7 @@
 %left '/' '*'
 %type <symbol_table> declaration_statement_list
 %type <symbol_entry> declaration_statement
-%type <symbol_table> argument_list
+%type <symbol_table_entry_list> argument_list
 %type <symbol_entry> argument
 %type <basic_block_list> basic_block_list
 %type <basic_block> basic_block
@@ -70,20 +71,27 @@
 %type <ast> variable
 %type <ast> constant
 %type <ast> IFELSE
+%type <ast_list> argument_in_function_list
 %type <goto_ast> GOTO_exp
 %type <ast> unary_exp
+%type <ast> argument_in_function
+%type <symbol_entry> function_decl
 %type <ast> conditional_exp
+%type <string_value> procedure_name
 %start program
 
 %%
 
 program:
 	declaration_statement_list 
-	other_program
 	{
 		program_object.set_global_table(*$1);
 	}
-|
+	other_program
+	{
+
+	}
+|  
 	other_program
 	{
 		
@@ -98,8 +106,9 @@ other_program:
 	}
 	procedure_body
 	{
+/*		cout<<current_procedure->get_proc_name()<<endl;
 		program_object.set_procedure_map(current_procedure, get_line_number());
-
+*/
 	}
 |
 	other_program
@@ -111,21 +120,25 @@ other_program:
 	}
 	procedure_body
 	{
+/*		cout<<current_procedure->get_proc_name()<<endl;
 		program_object.set_procedure_map(current_procedure, get_line_number());
-	}
+*/	}
 ;
 
 procedure_name:
 	NAME '(' ')'
 	{
-		current_procedure = new Procedure(void_data_type, *$1);
+		current_procedure = program_object.get_procedure(*$1);
+		$$ = $1;
 	}
 |
 	NAME '(' argument_list ')'
 	{
-		current_procedure = new Procedure(void_data_type, *$1);
-		current_procedure->set_argument_list(*$3);
+		current_procedure = program_object.get_procedure(*$1);
+		$$ = $1;
+		
 	}
+
 ;
 procedure_body:
 	'{' declaration_statement_list
@@ -151,7 +164,8 @@ declaration_statement_list:
 	declaration_statement
 	{
 		int line = get_line_number();
-		program_object.variable_in_proc_map_check($1->get_variable_name(), line);
+		if(!$1->get_type())
+			program_object.variable_in_proc_map_check($1->get_variable_name(), line);
 
 		string var_name = $1->get_variable_name();
 		if (current_procedure && current_procedure->get_proc_name() == var_name)
@@ -161,13 +175,16 @@ declaration_statement_list:
 		}
 
 		$$ = new Symbol_Table();
-		$$->push_symbol($1);
+		if(!$1->get_type())
+			$$->push_symbol($1);
+
 	}
 |
 	declaration_statement_list declaration_statement
 	{
 		int line = get_line_number();
-		program_object.variable_in_proc_map_check($2->get_variable_name(), line);
+		if(!$2->get_type())
+			program_object.variable_in_proc_map_check($2->get_variable_name(), line);
 
 		string var_name = $2->get_variable_name();
 		if (current_procedure && current_procedure->get_proc_name() == var_name)
@@ -190,7 +207,8 @@ declaration_statement_list:
 		else
 			$$ = new Symbol_Table();
 
-		$$->push_symbol($2);
+		if(!$2->get_type())
+			$$->push_symbol($2);
 	}
 ;
 
@@ -213,121 +231,109 @@ declaration_statement:
 |
 	function_decl ';'
 	{
-	
+		$$ = $1;
+		$$->set_type(true);
 	}
 ;
 function_decl:
 	INTEGER NAME '(' argument_list ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(int_data_type,*$2);
-		current_procedure->set_argument_list(*$4);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(int_data_type,*$2);
+		new_procedure->set_argument_list(*$4);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,int_data_type);
+
 	}
 |
 	FLOAT NAME '(' argument_list ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(float_data_type,*$2);
-		current_procedure->set_argument_list(*$4);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(float_data_type,*$2);
+		new_procedure->set_argument_list(*$4);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,float_data_type);
 
 	}
 |
 	DOUBLE NAME '(' argument_list ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(float_data_type,*$2);
-		current_procedure->set_argument_list(*$4);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(float_data_type,*$2);
+		new_procedure->set_argument_list(*$4);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,float_data_type);
 
 	}
 |
 	VOID NAME '(' argument_list ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(void_data_type,*$2);
-		current_procedure->set_argument_list(*$4);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(void_data_type,*$2);
+		new_procedure->set_argument_list(*$4);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,void_data_type);
 
 	}
 |
 	INTEGER NAME '(' ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(int_data_type,*$2);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(int_data_type,*$2);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,int_data_type);
 
 	}
 |
 	FLOAT NAME '(' ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(float_data_type,*$2);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(float_data_type,*$2);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,float_data_type);
 
 	}
 |
 	DOUBLE NAME '(' ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(float_data_type,*$2);
-		program_object.set_procedure_map(current_procedure,line);
+		Procedure * new_procedure;
+		new_procedure = new Procedure(float_data_type,*$2);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,float_data_type);
 
 	}
 |
 	VOID NAME '(' ')' 
 	{
 		int line = get_line_number();
-		current_procedure = new Procedure(void_data_type,*$2);
-		program_object.set_procedure_map(current_procedure,line);
-
+		Procedure * new_procedure;
+		new_procedure = new Procedure(void_data_type,*$2);
+		program_object.set_procedure_map(new_procedure,line);
+		$$ = new Symbol_Table_Entry(*$2,void_data_type);
 	}
 ;
 argument_list:
 	argument
 	{
-		int line = get_line_number();
-		program_object.variable_in_proc_map_check($1->get_variable_name(), line);
 
-		string var_name = $1->get_variable_name();
-		if (current_procedure && current_procedure->get_proc_name() == var_name)
-		{
-			int line = get_line_number();
-			report_error("Variable name cannot be same as procedure name", line);
-		}
-
-		$$ = new Symbol_Table();
-		$$->push_symbol($1);
+		$$ = new list<Symbol_Table_Entry *>();
+		$$->push_back($1);
 	}
 |
 	argument_list ',' argument
 	{
-		int line = get_line_number();
-		program_object.variable_in_proc_map_check($3->get_variable_name(), line);
-
-		string var_name = $3->get_variable_name();
-		if (current_procedure && current_procedure->get_proc_name() == var_name)
-		{
-			int line = get_line_number();
-			report_error("Variable name cannot be same as procedure name", line);
-		}
-
-		if ($1 != NULL)
-		{
-			if($1->variable_in_symbol_list_check(var_name))
-			{
-				int line = get_line_number();
-				report_error("Variable is declared twice", line);
-			}
-
+		if($1 != NULL)
 			$$ = $1;
-		}
-
 		else
-			$$ = new Symbol_Table();
-
-		$$->push_symbol($3);
+			$$ = new list<Symbol_Table_Entry *>();
+		$$->push_back($3);
 	}
 ;
 argument:
@@ -397,7 +403,7 @@ basic_block:
 			$$ = new Basic_Block($1, *ast_list);
 		}
 
-		delete $3;
+		// delete $3;
 	}
 ;
 
@@ -426,7 +432,7 @@ executable_statement_list:
 	assignment_statement_list RETURN conditional_exp';'
 	{
 		
-		Ast * ret = new Return_Ast();
+		Ast * ret = new Return_Ast($3);
 		if ($1 != NULL)
 			$$ = $1;
 
@@ -488,30 +494,42 @@ assignment_statement:
 |
 	NAME '(' ')' ';'
 	{
-
+		Procedure * p;
+		p = program_object.get_procedure(*$1);
+		list<Ast *> * l = new list<Ast *> ();
+		$$ = new Procedurecall_Ast(*$1,*l);
+		$$->set_data_type(p->get_return_type());
 	}
 |
 	NAME '(' argument_in_function_list ')' ';'
 	{
-
+		Procedure * p;
+		p = program_object.get_procedure(*$1);
+		$$ = new Procedurecall_Ast(*$1,*$3);
+		$$->set_data_type(p->get_return_type());
 	}	
 ;
 argument_in_function_list:
 	argument_in_function ',' argument_in_function_list
 	{
+		if($3 != NULL)
+			$$ = $3;
+		else
+			$$ = new list<Ast *>();
+		$$->push_back($1);
 
 	}
 |
 	argument_in_function
 	{
-
+		$$ = new list<Ast *>();
+		$$->push_back($1);
 	}
-
 ;	
 argument_in_function:
 	conditional_exp
 	{
-
+		$$ = $1;
 	}
 ;
 IFELSE:
@@ -666,12 +684,19 @@ unary_exp:
 |
 	NAME '(' ')'
 	{
-
+		Procedure * p;
+		p = program_object.get_procedure(*$1);
+		list<Ast *> * l = new list<Ast *> ();
+		$$ = new Procedurecall_Ast(*$1,*l);
+		$$->set_data_type(p->get_return_type());
 	}
 |
 	NAME '(' argument_in_function_list ')'
 	{
-
+		Procedure * p;
+		p = program_object.get_procedure(*$1);
+		$$ = new Procedurecall_Ast(*$1,*$3);
+		$$->set_data_type(p->get_return_type());
 	}	
 
 |	'(' FLOAT ')' unary_exp

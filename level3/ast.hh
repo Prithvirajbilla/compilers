@@ -111,9 +111,11 @@ public:
 
 class Return_Ast:public Ast
 {
-
+	Ast * return_value;
+	bool is_return;
 public:
 	Return_Ast();
+	Return_Ast(Ast * l);
 	~Return_Ast();
 	void set_data_type(Data_Type value);
 	void print_ast(ostream & file_buffer);
@@ -191,4 +193,19 @@ public:
 	void print_ast(ostream & file_buffer);
 	Eval_Result & evaluate(Local_Environment & eval_env,ostream & file_buffer);
 };
+class Procedurecall_Ast:public Ast
+{
+	string name;
+	list<Ast *> arguments;
+public:
+	Procedurecall_Ast(string & n,list<Ast *> & args);
+	~Procedurecall_Ast();
+	Data_Type get_data_type();
+	void set_data_type(Data_Type d);
+	bool check_ast(int line);
+	void print_ast(ostream & file_buffer);
+	Eval_Result & evaluate(Local_Environment & eval_env,ostream & file_buffer);
+};
+
+
 #endif

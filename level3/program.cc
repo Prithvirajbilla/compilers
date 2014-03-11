@@ -57,7 +57,12 @@ void Program::set_global_table(Symbol_Table & new_global_table)
 	global_symbol_table = new_global_table;
 	global_symbol_table.set_table_scope(global);
 }
-
+Procedure * Program::get_procedure(string ma)
+{
+/*	cout<<ma<<" awe"<<endl;
+	cout<<procedure_map[ma]<<endl;
+*/	return procedure_map[ma];
+}
 void Program::set_procedure_map(Procedure * proc, int line)
 {
 	if (proc == NULL)
@@ -100,13 +105,17 @@ void Program::print_ast()
 	ostream & ast_buffer = command_options.get_ast_buffer();
 
 	ast_buffer << "Program:\n";
+	map<string, Procedure *> :: iterator it;
+	for(it= procedure_map.begin();it!=procedure_map.end();it++)
+	{
+		Procedure * main = it->second;
+		if (main != NULL)
+		{	
+			main->print_ast(ast_buffer);
+		}
 
-	Procedure * main = get_main_procedure(ast_buffer);
-	if (main == NULL)
-		report_error("No main function found in the program", NOLINE);
 
-	else
-		main->print_ast(ast_buffer);
+	}
 }
 
 Eval_Result & Program::evaluate()

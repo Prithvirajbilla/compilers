@@ -29,10 +29,11 @@ using namespace std;
 #include"user-options.hh"
 #include"error-display.hh"
 #include"local-environment.hh"
-
 #include"symbol-table.hh"
 #include"ast.hh"
-
+#include"basic-block.hh"
+#include"procedure.hh"
+#include"program.hh"
 Ast::Ast()
 {}
 
@@ -289,14 +290,27 @@ Eval_Result & Number_Ast<DATA_TYPE>::evaluate(Local_Environment & eval_env, ostr
 ///////////////////////////////////////////////////////////////////////////////
 
 Return_Ast::Return_Ast()
-{}
-
+{
+	is_return = false;
+}
+Return_Ast::Return_Ast(Ast * l)
+{
+	return_value = l;
+	is_return = true;
+}
 Return_Ast::~Return_Ast()
 {}
 
 void Return_Ast::print_ast(ostream & file_buffer)
 {
-	file_buffer << AST_SPACE << "Return <NOTHING>\n";
+	if(!is_return)
+		file_buffer << AST_SPACE << "RETURN <NOTHING>\n";
+	else
+	{
+		file_buffer<< AST_SPACE << "RETURN ";
+		 return_value->print_ast(file_buffer);
+		 file_buffer<<"\n\n";
+	}
 }
 void Return_Ast::set_data_type(Data_Type value)
 {
@@ -676,6 +690,49 @@ Eval_Result & Typecast_Ast::evaluate(Local_Environment & eval_env, ostream & fil
 		result.set_value(answer);
 		return result;
 	}
+}
+
+/////////////////////////////////////////////
+Procedurecall_Ast::Procedurecall_Ast(string& n,list<Ast *> & args)
+{
+	name = n;
+	arguments = args;
+}
+
+Procedurecall_Ast::~Procedurecall_Ast()
+{
+
+}
+
+bool Procedurecall_Ast::check_ast(int line)
+{
+	return true;
+
+}
+void Procedurecall_Ast::set_data_type(Data_Type d)
+{
+	 node_data_type = d;
+}
+Data_Type Procedurecall_Ast::get_data_type()
+{
+	return node_data_type;
+}
+void Procedurecall_Ast::print_ast(ostream & file_buffer)
+{
+	Procedure * p;
+	p = program_object.get_procedure(name);
+	file_buffer<<"\n"<<AST_SPACE<<"FN CALL: "<<name<<"(";
+	list<Ast *> :: iterator it;
+	for(it = arguments.begin();it!=arguments.end();it++)
+	{
+		file_buffer<<"\n"<<AST_NODE_SPACE;
+		(*it)->print_ast(file_buffer);
+	}	
+	cout<<")";
+}
+Eval_Result & Procedurecall_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
+{
+
 }
 
 /////////////////////////////////////////////

@@ -48,7 +48,7 @@ public:
 
 	void set_procedure_map(Procedure * proc, int line);
 	void set_global_table(Symbol_Table & new_global_table);
-
+	Procedure * get_procedure(string ma);
 	Symbol_Table_Entry & get_symbol_table_entry(string variable);
 
 	void print_ast();

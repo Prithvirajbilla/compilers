@@ -41,6 +41,12 @@ Procedure::Procedure(Data_Type proc_return_type, string proc_name)
 	return_type = proc_return_type;
 	name = proc_name;
 }
+Procedure::Procedure(Data_Type proc_return_type, string proc_name,list<Symbol_Table_Entry *> symbl_entry)
+{
+	return_type = proc_return_type;
+	name = proc_name;
+	
+}
 
 Procedure::~Procedure()
 {
@@ -54,14 +60,32 @@ string Procedure::get_proc_name()
 	return name;
 }
 
+void Procedure::set_return_type(Data_Type ret)
+{
+	return_type = ret;
+}
 void Procedure::set_basic_block_list(list<Basic_Block *> & bb_list)
 {
 	basic_block_list = bb_list;
 }
 
+void Procedure::add_arg(Symbol_Table_Entry & s)
+{
+	arg_list.push_back(&s);
+}
+void Procedure::set_argument_list(list<Symbol_Table_Entry *> arg)
+{
+	arg_list = arg;
+}
 void Procedure::set_local_list(Symbol_Table & new_list)
 {
 	local_symbol_table = new_list;
+	list<Symbol_Table_Entry *>::iterator i;
+	for (i = arg_list.begin(); i != arg_list.end(); i++)
+	{
+		cout<<(*i)->get_variable_name();
+		local_symbol_table.push_symbol(*i);
+	}
 	local_symbol_table.set_table_scope(local);
 }
 
@@ -161,7 +185,3 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	return *result;
 }
 
-void Procedure :: set_argument_list(Symbol_Table & new_list)
-{
-	argument_list = new_list;
-}

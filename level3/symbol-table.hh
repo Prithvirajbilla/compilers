@@ -69,12 +69,14 @@ class Symbol_Table_Entry
 {
 	string variable_name;
 	Data_Type variable_data_type;
+	bool function;
 
 public:
 	Symbol_Table_Entry();
 	Symbol_Table_Entry(string & name, Data_Type new_data_type);
 	~Symbol_Table_Entry();
-
+	bool get_type();
+	void set_type(bool b);
 	Data_Type get_data_type();
 	string get_variable_name();
 };
