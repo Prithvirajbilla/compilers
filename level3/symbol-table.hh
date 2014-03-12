@@ -63,6 +63,8 @@ public:
 	void global_list_in_proc_map_check(int line);
 
 	void create(Local_Environment & local_global_variables_table);
+	list<Symbol_Table_Entry *> get_variable_table();
+	
 };
 
 class Symbol_Table_Entry

@@ -105,7 +105,7 @@ void Assignment_Ast::set_data_type(Data_Type value)
 
 void Assignment_Ast::print_ast(ostream & file_buffer)
 {
-	file_buffer << AST_SPACE << "Asgn:\n";
+	file_buffer <<"\n"<< AST_SPACE << "Asgn:\n";
 
 	file_buffer << AST_NODE_SPACE"LHS (";
 	lhs->print_ast(file_buffer);
@@ -304,10 +304,10 @@ Return_Ast::~Return_Ast()
 void Return_Ast::print_ast(ostream & file_buffer)
 {
 	if(!is_return)
-		file_buffer << AST_SPACE << "RETURN <NOTHING>\n";
+		file_buffer<<"\n\n"<< AST_SPACE << "RETURN <NOTHING>\n";
 	else
 	{
-		file_buffer<< AST_SPACE << "RETURN ";
+		file_buffer<<"\n\n"<< AST_SPACE << "RETURN ";
 		 return_value->print_ast(file_buffer);
 		 file_buffer<<"\n\n";
 	}
@@ -318,10 +318,22 @@ void Return_Ast::set_data_type(Data_Type value)
 }
 Eval_Result & Return_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
 {
-	Eval_Result & result = *new Eval_Result_Value_Int();
-	file_buffer<<AST_SPACE<<"Return <NOTHING>\n";
-	result.set_result_enum(void_result);
-	return result;
+	if(!is_return)
+	{	
+		Eval_Result & result = *new Eval_Result_Value_Int();
+		file_buffer<<AST_SPACE<<"Return <NOTHING>\n";
+		result.set_result_enum(void_result);
+		return result;
+	}
+	else
+	{
+		file_buffer<<"\n\n"<< AST_SPACE << "RETURN ";
+		Eval_Result & result = *new Eval_Result_Value_Int();
+		return_value->print_ast(file_buffer);
+		file_buffer<<"\n\n";
+		result.set_result_enum(return_result);
+		return result;
+	}
 }
 
 template class Number_Ast<int>;
@@ -679,13 +691,15 @@ void Typecast_Ast::print_ast(ostream & file_buffer)
 Eval_Result & Typecast_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
 {
 	float answer  = typecast->evaluate(eval_env, file_buffer).get_value();
-	if(node_data_type == int_data_type){
+	if(node_data_type == int_data_type)
+	{
 		int k = answer;
 		Eval_Result & result = *new Eval_Result_Value_Int();
 		result.set_value(k);
 		return result;
 	}
-	else if(node_data_type == float_data_type){
+	else if(node_data_type == float_data_type)
+	{
 		Eval_Result & result = *new Eval_Result_Value_Float();
 		result.set_value(answer);
 		return result;
@@ -721,18 +735,31 @@ void Procedurecall_Ast::print_ast(ostream & file_buffer)
 {
 	Procedure * p;
 	p = program_object.get_procedure(name);
-	file_buffer<<"\n"<<AST_SPACE<<"FN CALL: "<<name<<"(";
-	list<Ast *> :: iterator it;
-	for(it = arguments.begin();it!=arguments.end();it++)
-	{
-		file_buffer<<"\n"<<AST_NODE_SPACE;
-		(*it)->print_ast(file_buffer);
-	}	
-	cout<<")";
+	if (arguments.size() == 0)
+		file_buffer<<"\n"<<AST_SPACE<<"FN CALL: "<<name<<"()";
+	else
+	{		
+		file_buffer<<"\n"<<AST_SPACE<<"FN CALL: "<<name<<"(";
+		list<Ast *> :: iterator it;
+		for(it = arguments.begin();it!=arguments.end();it++)
+		{
+			file_buffer<<"\n"<<AST_NODE_SPACE;
+			(*it)->print_ast(file_buffer);
+		}	
+		file_buffer<<")";
+	}
 }
 Eval_Result & Procedurecall_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
 {
-
+	Procedure * prod = program_object.get_procedure(name);
+	list<Eval_Result * > eval_result;
+	list<Ast *> :: iterator it;
+	for(it = arguments.begin(); it != arguments.end();it++)
+	{
+		
+		eval_result.push_back(&((*it)->evaluate(eval_env,file_buffer)));
+	}
+	prod->evaluate(file_buffer); 
 }
 
 /////////////////////////////////////////////

@@ -77,13 +77,24 @@ void Procedure::set_argument_list(list<Symbol_Table_Entry *> arg)
 {
 	arg_list = arg;
 }
-void Procedure::set_local_list(Symbol_Table & new_list)
+void Procedure::fill_argument_list()
 {
-	local_symbol_table = new_list;
 	list<Symbol_Table_Entry *>::iterator i;
 	for (i = arg_list.begin(); i != arg_list.end(); i++)
 	{
-		cout<<(*i)->get_variable_name();
+		local_symbol_table.push_symbol(*i);
+	}
+
+}
+void Procedure::set_local_list(Symbol_Table & new_list)
+{
+	if(new_list.get_variable_table().size() == 0)
+		return ;
+		
+	list<Symbol_Table_Entry *>::iterator i;
+	list<Symbol_Table_Entry *> l = new_list.get_variable_table();
+	for (i = l.begin(); i != l.end(); i++)
+	{
 		local_symbol_table.push_symbol(*i);
 	}
 	local_symbol_table.set_table_scope(local);
@@ -106,11 +117,12 @@ Symbol_Table_Entry & Procedure::get_symbol_table_entry(string variable_name)
 
 void Procedure::print_ast(ostream & file_buffer)
 {
-	file_buffer << PROC_SPACE << "Procedure: "<<name<< "\n";
+	file_buffer << PROC_SPACE << "Procedure: "<<name<< "\n\n";
 
 	list<Basic_Block *>::iterator i;
 	for(i = basic_block_list.begin(); i != basic_block_list.end(); i++)
 		(*i)->print_bb(file_buffer);
+	file_buffer<<"\n";
 }
 	
 Basic_Block & Procedure::get_start_basic_block()
@@ -185,3 +197,53 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	return *result;
 }
 
+
+
+Eval_Result & Procedure::evaluate(list<Eval_Result *> l,ostream & file_buffer)
+{
+	Local_Environment & eval_env = *new Local_Environment();
+	local_symbol_table.create(eval_env);
+	list<Eval_Result *>:: iterator it ;
+	list<Symbol_Table_Entry *>:: iterator i=arg_list.begin();
+	for(it = l.begin();it!=l.end();it++)
+	{
+		Eval_Result * e = *it;
+		Eval_Result_Value * k;
+		if(e->get_result_enum() == int_result)
+		{
+			k = new Eval_Result_Value_Int();
+			k->set_value(e->get_value());
+		}
+		else if(e->get_result_enum() == float_result)
+		{
+			k = new Eval_Result_Value_Float();
+			k->set_value(e->get_value());
+		}
+		eval_env.put_variable_value(*k,(*i)->get_variable_name());
+		i++;
+	}
+
+	Eval_Result * result = NULL;
+
+	file_buffer << PROC_SPACE << "Evaluating Procedure " << name << "\n";
+	file_buffer << LOC_VAR_SPACE << "Local Variables (before evaluating):\n";
+	eval_env.print(file_buffer);
+	file_buffer << "\n";
+	
+	Basic_Block * current_bb = &(get_start_basic_block());
+	while (current_bb)
+	{
+		result = &(current_bb->evaluate(eval_env, file_buffer));
+
+		if(result->get_result_enum() == 2)
+			current_bb = get_bb_at(*current_bb,result->get_value());
+		else
+			current_bb = get_next_bb(*current_bb);
+	}
+	file_buffer << "\n\n";
+	file_buffer << LOC_VAR_SPACE << "Local Variables (after evaluating):\n";
+	eval_env.print(file_buffer);
+
+	return *result;
+
+}

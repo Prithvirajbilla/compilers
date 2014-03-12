@@ -58,8 +58,9 @@ public:
 	Basic_Block * get_next_bb(Basic_Block & current_bb);
 	Basic_Block * get_bb_at(Basic_Block & current_bb,int i);
 	Basic_Block & get_start_basic_block();
-
+	void fill_argument_list();
 	Eval_Result & evaluate(ostream & file_buffer);
+	Eval_Result & evaluate(list<Eval_Result *> l,ostream & file_buffer);
 	void add_arg(Symbol_Table_Entry &);
 	void set_argument_list(list<Symbol_Table_Entry *> arg);
 	bool variable_in_symbol_list_check(string variable);

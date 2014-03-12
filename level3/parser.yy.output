@@ -46,7 +46,7 @@ Production Rules
 43: assignment_statement (ASSIGN_OP) ->  variable ASSIGN_OP conditional_exp ';'
 44: assignment_statement (NAME) ->  NAME '(' ')' ';'
 45: assignment_statement (NAME) ->  NAME '(' argument_in_function_list ')' ';'
-46: argument_in_function_list (',') ->  argument_in_function ',' argument_in_function_list
+46: argument_in_function_list (',') ->  argument_in_function_list ',' argument_in_function
 47: argument_in_function_list ->  argument_in_function
 48: argument_in_function ->  conditional_exp
 49: IFELSE (IF) ->  IF '(' conditional_exp ')' GOTO_exp ELSE GOTO_exp
@@ -1054,13 +1054,13 @@ State 113:
 
 State 114:
 45: assignment_statement -> NAME '(' argument_in_function_list  . ')' ';' 
+46: argument_in_function_list -> argument_in_function_list  . ',' argument_in_function 
   0:   On ')' to state 136
+  1:   On ',' to state 137
 
 
 State 115:
-46: argument_in_function_list -> argument_in_function  . ',' argument_in_function_list 
 47: argument_in_function_list -> argument_in_function  . 
-  0:   On ',' to state 137
   Reduce by 47: argument_in_function_list -> argument_in_function  . 
 
 
@@ -1346,7 +1346,9 @@ State 127:
 
 State 128:
 66: unary_exp -> NAME '(' argument_in_function_list  . ')' 
+46: argument_in_function_list -> argument_in_function_list  . ',' argument_in_function 
   0:   On ')' to state 138
+  1:   On ',' to state 137
 
 
 State 129:
@@ -1412,18 +1414,17 @@ State 136:
 
 
 State 137:
-46: argument_in_function_list -> argument_in_function ','  . argument_in_function_list 
-  0:   On argument_in_function_list to state 144
-  1:   On argument_in_function to state 115
-  2:   On conditional_exp to state 116
-  3:   On unary_exp to state 81
-  4:   On '-' to state 82
-  5:   On variable to state 83
-  6:   On constant to state 84
-  7:   On NAME to state 85
-  8:   On '(' to state 86
-  9:   On INTEGER_NUMBER to state 87
-  10:   On FLOAT_NUMBER to state 88
+46: argument_in_function_list -> argument_in_function_list ','  . argument_in_function 
+  0:   On argument_in_function to state 144
+  1:   On conditional_exp to state 116
+  2:   On unary_exp to state 81
+  3:   On '-' to state 82
+  4:   On variable to state 83
+  5:   On constant to state 84
+  6:   On NAME to state 85
+  7:   On '(' to state 86
+  8:   On INTEGER_NUMBER to state 87
+  9:   On FLOAT_NUMBER to state 88
 
 
 State 138:
@@ -1457,8 +1458,8 @@ State 143:
 
 
 State 144:
-46: argument_in_function_list -> argument_in_function ',' argument_in_function_list  . 
-  Reduce by 46: argument_in_function_list -> argument_in_function ',' argument_in_function_list  . 
+46: argument_in_function_list -> argument_in_function_list ',' argument_in_function  . 
+  Reduce by 46: argument_in_function_list -> argument_in_function_list ',' argument_in_function  . 
 
 
 State 145:

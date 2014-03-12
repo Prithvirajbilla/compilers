@@ -101,14 +101,10 @@ program:
 other_program:
 	procedure_name
 	{
-		
-		
+		current_procedure->fill_argument_list();
 	}
 	procedure_body
 	{
-/*		cout<<current_procedure->get_proc_name()<<endl;
-		program_object.set_procedure_map(current_procedure, get_line_number());
-*/
 	}
 |
 	other_program
@@ -117,12 +113,13 @@ other_program:
 	}
 	procedure_name
 	{
+		Symbol_Table sd = Symbol_Table();
+		current_procedure->fill_argument_list();
 	}
 	procedure_body
 	{
-/*		cout<<current_procedure->get_proc_name()<<endl;
-		program_object.set_procedure_map(current_procedure, get_line_number());
-*/	}
+		("procedurebody %d\n",get_line_number());
+	}
 ;
 
 procedure_name:
@@ -322,7 +319,6 @@ function_decl:
 argument_list:
 	argument
 	{
-
 		$$ = new list<Symbol_Table_Entry *>();
 		$$->push_back($1);
 	}
@@ -373,6 +369,7 @@ basic_block_list:
 |
 	basic_block
 	{
+
 		if (!$1)
 		{
 			int line = get_line_number();
@@ -510,13 +507,13 @@ assignment_statement:
 	}	
 ;
 argument_in_function_list:
-	argument_in_function ',' argument_in_function_list
+	argument_in_function_list ','  argument_in_function
 	{
-		if($3 != NULL)
-			$$ = $3;
+		if($1 != NULL)
+			$$ = $1;
 		else
 			$$ = new list<Ast *>();
-		$$->push_back($1);
+		$$->push_back($3);
 
 	}
 |
@@ -742,7 +739,7 @@ variable:
 		else
 		{
 			int line = get_line_number();
-			report_error("Variable has not been declared", line);
+			//report_error("Variable has not been declared", line);
 		}
 
 		$$ = new Name_Ast(*$1, var_table_entry);
