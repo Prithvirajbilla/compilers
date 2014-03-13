@@ -174,7 +174,7 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	
 	Eval_Result * result = NULL;
 
-	file_buffer << PROC_SPACE << "Evaluating Procedure " << name << "\n";
+	file_buffer << PROC_SPACE << "Evaluating Procedure << " << name << " >>\n";
 	file_buffer << LOC_VAR_SPACE << "Local Variables (before evaluating):\n";
 	eval_env.print(file_buffer);
 	file_buffer << "\n";
@@ -183,16 +183,42 @@ Eval_Result & Procedure::evaluate(ostream & file_buffer)
 	while (current_bb)
 	{
 		result = &(current_bb->evaluate(eval_env, file_buffer));
-		if(result->get_result_enum() == 2)
+		if(result->get_result_enum() == block_result)
 			current_bb = get_bb_at(*current_bb,result->get_value());
+		else if (result->get_result_enum() == return_result || result->get_result_enum() == void_result)	
+				break;
 		else
 			current_bb = get_next_bb(*current_bb);
 				
 	}
-
+	string varname = "return";
+	if(return_type == int_data_type)
+	{
+		Eval_Result_Value & r2 = *new Eval_Result_Value_Int();
+		r2.set_value((int)result->get_value());
+		eval_env.put_variable_value(r2, varname);
+	}
+	else if(return_type == float_data_type)
+	{
+		Eval_Result_Value & r2 = *new Eval_Result_Value_Float();
+		r2.set_value(result->get_value());
+		eval_env.put_variable_value(r2, varname);
+	}
 	file_buffer << "\n\n";
-	file_buffer << LOC_VAR_SPACE << "Local Variables (after evaluating):\n";
+	file_buffer << LOC_VAR_SPACE << "Local Variables (after evaluating) Function: << "<<name<<" >>\n";
 	eval_env.print(file_buffer);
+	if(return_type == int_data_type){
+		result->set_result_enum(int_result);
+		result->set_value((int)result->get_value());
+	}
+	else if(return_type == float_data_type){
+		result->set_result_enum(float_result);
+		result->set_value((float)result->get_value());
+	}
+	else if(return_type == void_data_type)
+	{
+
+	}
 
 	return *result;
 }
@@ -222,10 +248,8 @@ Eval_Result & Procedure::evaluate(list<Eval_Result *> l,ostream & file_buffer)
 		eval_env.put_variable_value(*k,(*i)->get_variable_name());
 		i++;
 	}
-
 	Eval_Result * result = NULL;
-
-	file_buffer << PROC_SPACE << "Evaluating Procedure " << name << "\n";
+	file_buffer << PROC_SPACE << "Evaluating Procedure << " << name << " >>\n";
 	file_buffer << LOC_VAR_SPACE << "Local Variables (before evaluating):\n";
 	eval_env.print(file_buffer);
 	file_buffer << "\n";
@@ -233,17 +257,46 @@ Eval_Result & Procedure::evaluate(list<Eval_Result *> l,ostream & file_buffer)
 	Basic_Block * current_bb = &(get_start_basic_block());
 	while (current_bb)
 	{
+
 		result = &(current_bb->evaluate(eval_env, file_buffer));
 
-		if(result->get_result_enum() == 2)
+		if(result->get_result_enum() == block_result)
 			current_bb = get_bb_at(*current_bb,result->get_value());
+		else if (result->get_result_enum() == return_result || result->get_result_enum() == void_result)
+			break;
 		else
 			current_bb = get_next_bb(*current_bb);
 	}
+	string varname = "return";
+	if(return_type == int_data_type)
+	{
+		Eval_Result_Value & r2 = *new Eval_Result_Value_Int();
+		r2.set_value((int)result->get_value());
+		eval_env.put_variable_value(r2, varname);
+	}
+	else if(return_type == float_data_type)
+	{
+		Eval_Result_Value & r2 = *new Eval_Result_Value_Float();
+		r2.set_value(result->get_value());
+		eval_env.put_variable_value(r2, varname);
+	}
+	else if(return_type == void_data_type)
+	{
+
+	}
+
 	file_buffer << "\n\n";
-	file_buffer << LOC_VAR_SPACE << "Local Variables (after evaluating):\n";
+	file_buffer << LOC_VAR_SPACE << "Local Variables (after evaluating) Function: << "<<name<<" >>\n";
 	eval_env.print(file_buffer);
 
+	if(return_type == int_data_type){
+		result->set_result_enum(int_result);
+		result->set_value((int)result->get_value());
+	}
+	else if(return_type == float_data_type){
+		result->set_result_enum(float_result);
+		result->set_value((float)result->get_value());
+	}
 	return *result;
 
 }

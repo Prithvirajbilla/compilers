@@ -37,6 +37,7 @@ typedef enum
 	float_result,
 	void_result,
 	return_result,
+	block_result,
 } Result_Enum;
 
 class Eval_Result;

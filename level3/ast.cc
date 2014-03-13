@@ -266,7 +266,7 @@ void Number_Ast<DATA_TYPE>::print_ast(ostream & file_buffer)
 {
 	if(node_data_type == float_data_type)
 		file_buffer << "Num : "<< setiosflags(ios::fixed) << setprecision(2)<< constant;
-	else
+	else if(node_data_type == int_data_type)
 		file_buffer << "Num : "<< (int)constant;
 }
 
@@ -320,19 +320,19 @@ Eval_Result & Return_Ast::evaluate(Local_Environment & eval_env, ostream & file_
 {
 	if(!is_return)
 	{	
-		Eval_Result & result = *new Eval_Result_Value_Int();
-		file_buffer<<AST_SPACE<<"Return <NOTHING>\n";
+		Eval_Result & result = *new Eval_Result_Value_Float();
+		print_ast(file_buffer);
 		result.set_result_enum(void_result);
 		return result;
 	}
 	else
 	{
-		file_buffer<<"\n\n"<< AST_SPACE << "RETURN ";
-		Eval_Result & result = *new Eval_Result_Value_Int();
-		return_value->print_ast(file_buffer);
-		file_buffer<<"\n\n";
+		Eval_Result & rr = return_value->evaluate(eval_env, file_buffer);
+		Eval_Result & result = *new Eval_Result_Value_Float();
+		result.set_value(rr.get_value());
+		print_ast(file_buffer);
 		result.set_result_enum(return_result);
-		return result;
+		return result;	
 	}
 }
 
@@ -369,7 +369,7 @@ Eval_Result & Goto_Ast::evaluate(Local_Environment & eval_env, ostream & file_bu
 	print_ast(file_buffer);
 	file_buffer << AST_SPACE << "GOTO (BB "<<this->block_num<<")\n";
 	result.set_value(this->block_num);
-	result.set_result_enum(void_result);
+	result.set_result_enum(block_result);
 	return result;
 }
 
@@ -643,7 +643,7 @@ Eval_Result & IfCondition_Ast::evaluate(Local_Environment & eval_env, ostream & 
 		file_buffer<<"\n"<<AST_SPACE<<"Condition True : ";
 		file_buffer <<"Goto (BB "<<bnum<<")\n";
 		result.set_value(bnum);
-		result.set_result_enum(void_result);
+		result.set_result_enum(block_result);
 	}
 	else
 	{
@@ -651,7 +651,7 @@ Eval_Result & IfCondition_Ast::evaluate(Local_Environment & eval_env, ostream & 
 		file_buffer<<"\n"<<AST_SPACE<<"Condition False : ";
 		file_buffer <<"Goto (BB "<<bnum<<")\n";
 		result.set_value(bnum);
-		result.set_result_enum(void_result);
+		result.set_result_enum(block_result);
 
 	}
 	
@@ -759,7 +759,8 @@ Eval_Result & Procedurecall_Ast::evaluate(Local_Environment & eval_env, ostream 
 		
 		eval_result.push_back(&((*it)->evaluate(eval_env,file_buffer)));
 	}
-	prod->evaluate(file_buffer); 
+	
+	return prod->evaluate(eval_result,file_buffer);
 }
 
 /////////////////////////////////////////////

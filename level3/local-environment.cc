@@ -23,7 +23,7 @@
 
 #include<string>
 #include<fstream>
-
+#include <iomanip>
 using namespace std;
 
 #include"local-environment.hh"
@@ -157,8 +157,8 @@ void Local_Environment::print(ostream & file_buffer)
 		
 			else if(vi->get_result_enum() == int_result)
 				file_buffer << VAR_SPACE << (*i).first << " : " << (int)vi->get_value() << "\n";
-			else
-				file_buffer << VAR_SPACE << (*i).first << " : " << vi->get_value() << "\n";
+			else if(vi->get_result_enum() == float_result)
+				file_buffer << VAR_SPACE << (*i).first << " : "<< setiosflags(ios::fixed) << setprecision(2)<<vi->get_value() << "\n";
 		}
 	}
 }
