@@ -7,3 +7,7 @@
 *parser.cc
 *scannerbase.h
 *scanner.cc
+*.our
+*.sir
+*.spim
+*.ic

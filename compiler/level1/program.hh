@@ -51,14 +51,19 @@ public:
 
 	Symbol_Table_Entry & get_symbol_table_entry(string variable);
 
-	void print_ast();
+	void print();
 
 	Procedure * get_main_procedure(ostream & file_buffer);
 
 	Eval_Result & evaluate();
 
+	bool variable_in_proc_map_check(string symbol);
 	bool variable_in_symbol_list_check(string variable);
-	void variable_in_proc_map_check(string symbol, int line);
+	void global_list_in_proc_map_check();
+
+	// compile
+	void compile();
+	void print_assembly();
 };
 
 #endif

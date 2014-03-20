@@ -28,26 +28,45 @@
 
 using namespace std;
 
+#include "common-classes.hh"
+
 #include "user-options.hh"
 #include "error-display.hh"
 
-void report_error(string error_message, int line)
+void check_invariant_underlying_function(bool condition, string error_message)
 {
-	string file_name = command_options.get_file_name();
+	if (!condition)
+	{
+		cerr << "\ncfglp internal error: " << error_message << "\n";
 
-	stringstream message;
-	if (line > NOLINE)
-		message << file_name << " : line " << line << " :: error : " << error_message;
-	else
-		message << file_name << " :: cfglp error : " << error_message;
-
-	print_error(message.str(), NOTEXIT);
+		command_options.remove_files();
+		exit(1);
+	}
 }
 
-void print_error(string error_message, int exit_flag)
-{
-	cerr << error_message << "\n";
+bool global_error_status = false;
 
-	command_options.remove_files();
-	exit(0);
+void report_violation_of_condition(bool condition, string error_message, int lineno)
+{
+	string file_name = command_options.get_file_name();
+	if (!condition)
+	{
+		cerr <<  "cfglp error: File: " << file_name << ", Line: " << lineno << ": " << error_message << "\n";
+		global_error_status = true;
+	}
+} 
+
+void report_violation_and_abort(bool condition, string error_message, int lineno)
+{
+	string file_name = command_options.get_file_name();
+	if (!condition)
+	{
+		cerr <<  "cfglp error: File: " << file_name << ", Line: " << lineno << ": " << error_message << "\n";
+		exit(1);
+	}
+} 
+
+bool error_status()
+{
+	return global_error_status;
 }

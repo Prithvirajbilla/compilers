@@ -8,54 +8,37 @@ Filename:
 
 ast.hh
 =======
-
-Added declarations for Classes
-
-	class Goto_Ast;
-	class Relational_Ast;
-	class IfCondition_Ast;
+Made changes to match with level 0 compiler and added compile function for all the classes.
 
 
 ast.cc
 =======
-
-Implemented the functions in declared in ast.hh
-
-print_ast(ostream &file_buffer) 
-	prints the Abstract syntax tree of the statement.
-
-evaluate(Local_Environment & eval_env, ostream & file_buffer)
-	evaluates the statement expression and prints.
-
-procedure.hh
-=============
-
-Added a new function declaration to the get the Basic block object of a specific 
-block number
-
-
-procedure.cc
-==============
-
-Implemented the function described above.
-Changed the evaluate function of the Procedure object such that it jumps to the correct basic block
-
-(instead of iterating to the next block.)
+Made changes to match with level 0 compiler and added compile function for all the classes.
 
 
 parser.yy
 ============
-
-1) added left keyword to the Operator tokens to take left precedence and also "<" ,">" ,"=>","<=" 
-have higher precedence than "==" and "!=";
-
-2) Added action routines to all the production rules.
-
-3) Changed the production rule for conditional_exp by making it ambiguous
-	conditional_exp -> conditional_exp OP2 conditional_exp
+Made changes to match with level 0 compiler
 
 scanner.ll
 ==============
 
-1) added new tokens for all the comparison operators
-2) Added new token for the Basci Block.
+Made changes to match with level 0 compiler
+
+
+reg-alloc.cc
+=============
+added 8 new opcodes to the instruction table
+
+icode.hh
+========
+Declared intermediated generating classes for Jump , Goto , Label and Relational.
+
+icode.cc
+=========
+Implemented the above classes and its functions.
+
+basic-block.cc
+==============
+
+Added code to print out block number in the given way.

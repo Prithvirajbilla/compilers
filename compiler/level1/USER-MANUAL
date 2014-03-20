@@ -19,27 +19,27 @@
     found at http://www.cse.iitb.ac.in/~uday/cfglp
 
     This  version  is the  interpreter-compiler  version. At the  moment
-    cfglp accepts level 1  language that  defines simple cfg constructs.
+    cfglp accepts level 0  language that  defines simple cfg constructs.
     These have been specified on the website.
 
-    To generate test cases which can be used as input to cfglp Level-1
+    To generate test cases which can be used as input to cfglp Level-0
     Interpreter-Compiler:
     (Replace {cfglp} with cfglp64 or cfglp32 depending on the configuration
     of your machine)
 
-    -- Make your current directory as level-1-32bits or level-1-64bits
+    -- Make your current directory as level-0-32bits or level-0-64bits
 
     -- To generate .cfg file for valid test.c file in test_files:
          - Run
               make -f Makefile.cfg FILE=test.c
          - test.cs306.cfg file is generated in the test_files directory
 
-    To run the cfglp Level-1 Interpreter-Compiler, follow the steps given
+    To run the cfglp Level-0 Interpreter-Compiler, follow the steps given
     below:
 
-    -- Make your current directory as level-1-32bits or level-1-64bits
+    -- Make your current directory as level-0-32bits or level-0-64bits
 
-    -- To test the cfglp Level-1 Interpreter-Compiler using a valid
+    -- To test the cfglp Level-0 Interpreter-Compiler using a valid
        test.cs306.cfg (generated using the above steps) in test_files:
          - Run
               make -f Makefile.cfglp
@@ -51,7 +51,7 @@
               ./{cfglp} --help
          - Observe the output
 
-    -- To test the cfglp Level-1 Interpreter-Compiler using an invalid
+    -- To test the cfglp Level-0 Interpreter-Compiler using an invalid
        test.ecfg (pre-existing) in test_files:
          - Run
               make -f Makefile.cfglp

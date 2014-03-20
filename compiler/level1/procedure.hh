@@ -42,8 +42,10 @@ class Procedure
 	Symbol_Table local_symbol_table;
 	list<Basic_Block *> basic_block_list;
 
+	int lineno;
+
 public:
-	Procedure(Data_Type proc_return_type, string proc_name);
+	Procedure(Data_Type proc_return_type, string proc_name, int line);
 	~Procedure();
 
 	string get_proc_name();
@@ -52,15 +54,23 @@ public:
 	Data_Type get_return_type();
 	Symbol_Table_Entry & get_symbol_table_entry(string variable_name);
 
-	void print_ast(ostream & file_buffer);
+	void print(ostream & file_buffer);
 
 	Basic_Block * get_next_bb(Basic_Block & current_bb);
-	Basic_Block * get_bb_at(Basic_Block & current_bb,int i);
 	Basic_Block & get_start_basic_block();
 
 	Eval_Result & evaluate(ostream & file_buffer);
 
 	bool variable_in_symbol_list_check(string variable);
+
+	// compile
+	void compile();
+	void print_icode(ostream & file_buffer);
+	void print_assembly(ostream & file_buffer);
+
+private:
+	void print_prologue(ostream & file_buffer);
+	void print_epilogue(ostream & file_buffer);
 };
 
 #endif

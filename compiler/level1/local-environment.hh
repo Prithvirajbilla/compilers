@@ -46,7 +46,7 @@ protected:
 	Result_Enum result_type;
 
 public:
-	virtual int get_value();
+	virtual int get_int_value();
 	virtual void set_value(int value);
 
 	virtual bool is_variable_defined();
@@ -59,8 +59,8 @@ public:
 class Eval_Result_Value:public Eval_Result
 {
 public:
-	virtual void set_value(int number) = 0;
-	virtual int get_value() = 0;
+	virtual void set_value(int number);
+	virtual int get_int_value();
 
 	virtual bool is_variable_defined() = 0;
 	virtual void set_variable_status(bool def) = 0;
@@ -78,7 +78,7 @@ public:
 	~Eval_Result_Value_Int();
 
 	void set_value(int number);
-	int get_value();
+	int get_int_value();
 
 	void set_variable_status(bool def);
 	bool is_variable_defined();
@@ -89,7 +89,7 @@ public:
 
 class Local_Environment
 {
-	map<string, Eval_Result_Value *> variable_table;
+	map<string, Eval_Result *> variable_table;
 
 public:
 	Local_Environment();
@@ -97,8 +97,8 @@ public:
 
 	void print(ostream & file_buffer);
 	bool is_variable_defined(string name);
-	Eval_Result_Value * get_variable_value(string name);
-	void put_variable_value(Eval_Result_Value & value, string name);
+	Eval_Result * get_variable_value(string name);
+	void put_variable_value(Eval_Result & value, string name);
 	bool does_variable_exist(string name);
 };
 

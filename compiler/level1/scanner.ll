@@ -36,27 +36,22 @@ return		{
 			return Parser::RETURN; 
 		}
 
-[:{}();]	{
-			store_token_name("META CHAR");
-			return matched()[0];
+if		{
+			store_token_name("IF");
+			return Parser::IF;
 		}
 
-[-]?[[:digit:]_]+ 	{ 
-				store_token_name("NUM");
-
-				ParserBase::STYPE__ * val = getSval();
-				val->integer_value = atoi(matched().c_str());
-
-				return Parser::INTEGER_NUMBER; 
-			}
-
-"="		{
-			store_token_name("ASSIGN_OP");
-
-			return Parser::ASSIGN_OP;	
+goto		{
+			store_token_name("GOTO");
+			return Parser::GOTO;
+		}
+		
+else		{
+			store_token_name("ELSE");
+			return Parser::ELSE;
 		}
 
-"!="	{
+"!="		{
 			store_token_name("NE");
 
 			return Parser::OP2;	
@@ -92,30 +87,19 @@ return		{
 			return Parser::OP7;	
 		}
 
-
-if		{
-			store_token_name("IF");
-			return Parser::IF;
-		}			
-
-else	{
-			store_token_name("ELSE");
-			return Parser::ELSE;
+[:{}();]	{
+			store_token_name("META CHAR");
+			return matched()[0];
 		}
 
-goto	{
-			store_token_name("GOTO");
-			return Parser::GOTO;
-		}
+[-]?[[:digit:]]+ 	{ 
+				store_token_name("NUM");
 
-"<bb "[[:digit:]_]+">"	{
-			store_token_name("BASIC BLOCK");
-			ParserBase::STYPE__ * val = getSval();
-			std::string number = matched(); 
-			val->integer_value = atoi(number.substr(4,number.length()-5).c_str());
-			
-			return Parser::basicblock_number; 
-		}
+				ParserBase::STYPE__ * val = getSval();
+				val->integer_value = atoi(matched().c_str());
+
+				return Parser::INTEGER_NUMBER; 
+			}
 
 [[:alpha:]_][[:alpha:][:digit:]_]* {
 					store_token_name("NAME");
@@ -126,12 +110,27 @@ goto	{
 					return Parser::NAME; 
 				}
 
-\n		{ 
-			if (command_options.is_show_tokens_selected())
-				ignore_token();
-		}    
+"<bb "[[:digit:]]+">"	{
+				store_token_name("BASIC BLOCK");
 
+				string bb_num_str = matched().substr(4, matched().length() - 2);
+				CHECK_INPUT_AND_ABORT((atoi(bb_num_str.c_str()) >= 2), "Illegal basic block lable", lineNr());
+
+				ParserBase::STYPE__ * val = getSval();
+				val->integer_value = atoi(bb_num_str.c_str());
+
+				return Parser::BBNUM;
+			}
+
+"="	{
+		store_token_name("ASSIGN_OP");
+		return Parser::ASSIGN;
+	}
+
+\n    		|
 ";;".*  	|
+[ \t]*";;".*	|
+[ \t]*"//".*	|
 [ \t]		{
 			if (command_options.is_show_tokens_selected())
 				ignore_token();
@@ -142,6 +141,6 @@ goto	{
 			error_message =  "Illegal character `" + matched();
 			error_message += "' on line " + lineNr();
 			
-			int line_number = lineNr();
-			report_error(error_message, line_number);
+			CHECK_INPUT(CONTROL_SHOULD_NOT_REACH, error_message, lineNr());
 		}
+

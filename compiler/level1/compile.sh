@@ -6,12 +6,11 @@ do
 	cd ..
 	echo $i
 	make -f Makefile.cfg FILE=$i > /dev/null
-	./cfglp -d -eval test_files/${i}s306.cfg > our.tok
-	./cfglp32 -d -eval test_files/${i}s306.cfg > sir.tok
-	diff -b -B our.tok sir.tok
+	./cfglp -icode test_files/${i}s306.cfg
+	cp test_files/${i}s306.cfg.ic test_files/${i}s306.cfg.ic.our
+	./cfglpsir -icode test_files/${i}s306.cfg 
+	diff -b -B test_files/${i}s306.cfg.ic.our test_files/${i}s306.cfg.ic
 	cd test_files
 done
 cd ..
-rm sir.tok 
-rm our.tok
 exit

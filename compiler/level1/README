@@ -18,7 +18,7 @@
     Details of CFGLP (Control Flow Graph Language Processor) tool can be
     found at http://www.cse.iitb.ac.in/~uday/cfglp
 
-    This directory (either level-1-32bits or level-1-64bits) contains 
+    This directory (either level-0-32bits or level-0-64bits) contains 
     the following:
     - Source files for cfglp (.cc, .ll, .yy and .hh files)
     - cfgpp32/cfglpp64 executable

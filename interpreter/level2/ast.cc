@@ -38,7 +38,6 @@ Ast::Ast()
 
 Ast::~Ast()
 {}
-
 bool Ast::check_ast(int line)
 {
 	report_internal_error("Should not reach, Ast : check_ast");
