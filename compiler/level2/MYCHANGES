@@ -1,0 +1,44 @@
+TEAM MEMBERS:
+110050051 Vamsidhar Yeddu
+110050065 Prithviraj M billa
+
+CODE CHANGES:
+
+Filename:
+
+ast.hh
+=======
+Made changes to match with level 0 compiler and added compile function for all the classes.
+
+
+ast.cc
+=======
+Made changes to match with level 0 compiler and added compile function for all the classes.
+
+
+parser.yy
+============
+Made changes to match with level 0 compiler
+
+scanner.ll
+==============
+
+Made changes to match with level 0 compiler
+
+
+reg-alloc.cc
+=============
+added 8 new opcodes to the instruction table
+
+icode.hh
+========
+Declared intermediated generating classes for Jump , Goto , Label and Relational.
+
+icode.cc
+=========
+Implemented the above classes and its functions.
+
+basic-block.cc
+==============
+
+Added code to print out block number in the given way.

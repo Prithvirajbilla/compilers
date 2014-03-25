@@ -11,3 +11,5 @@
 *.sir
 *.spim
 *.ic
+*~
+*.icode
