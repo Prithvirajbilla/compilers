@@ -30,6 +30,14 @@ int		{
 			store_token_name("INTEGER");
 			return Parser::INTEGER; 
 		}
+float   {
+			store_token_name("FLOAT");
+			return Parser::FLOAT;
+		}
+double  {
+				store_token_name("DOUBLE");
+				return Parser::DOUBLE;
+		}
 
 return		{ 
 			store_token_name("RETURN");
@@ -101,6 +109,11 @@ else		{
 				return Parser::INTEGER_NUMBER; 
 			}
 
+[-/+*]      {
+				store_token_name("ARITHOP");
+				return matched()[0];
+			}
+
 [[:alpha:]_][[:alpha:][:digit:]_]* {
 					store_token_name("NAME");
 
@@ -109,6 +122,13 @@ else		{
 
 					return Parser::NAME; 
 				}
+[-]?[0-9]+[.][0-9]+ {
+						store_token_name("FNUM");
+						ParserBase::STYPE__ * val = getSval();
+						val->float_value = atof(matched().c_str());
+						return Parser::FLOAT_NUMBER;
+					}
+
 
 "<bb "[[:digit:]]+">"	{
 				store_token_name("BASIC BLOCK");

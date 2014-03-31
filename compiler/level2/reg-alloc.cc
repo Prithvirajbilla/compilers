@@ -174,7 +174,7 @@ void Lra_Outcome::optimize_lra(Lra_Scenario lcase, Ast * destination_memory, Ast
 			is_same_as_source = true;
 			load_needed = false;
 		}
-		else if (destination_register != NULL)
+		else if ((destination_register != NULL) && (destination_register->size_list() == 1))
 		{
 			result_register = destination_register;
 			is_same_as_destination = true;
@@ -339,4 +339,9 @@ Register_Descriptor * Machine_Description::get_new_register()
 
 	CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, 
 			"Error in get_new_reg or register requirements of input program cannot be met");
+}
+
+int Register_Descriptor::size_list()
+{
+	return lra_symbol_list.size(); 
 }

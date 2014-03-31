@@ -29,6 +29,8 @@
 %union 
 {
 	int integer_value;
+	float float_value;
+	double double_value;
 	std::string * string_value;
 	pair<Data_Type, string> * decl;
 	list<Ast *> * ast_list;
@@ -45,6 +47,7 @@
 };
 
 %token <integer_value> INTEGER_NUMBER BBNUM
+%token <float_value> FLOAT_NUMBER
 %token <string_value> NAME
 %token RETURN INTEGER 
 %token ASSIGN
@@ -53,7 +56,8 @@
 %token GOTO
 %left OP2 OP3
 %left OP7 OP5 OP6 OP4  
-
+%left '-' '+'
+%left '/' '*'
 %type <symbol_table> optional_variable_declaration_list
 %type <symbol_table> variable_declaration_list
 %type <symbol_entry> variable_declaration
@@ -68,6 +72,7 @@
 %type <ast> IFELSE
 %type <goto_ast> GOTO_exp
 %type <ast> conditional_exp
+%type <ast> unary_exp
 
 %start program
 
@@ -521,6 +526,37 @@ conditional_exp:
 		}
 	}
 |
+	conditional_exp '+' conditional_exp
+	{
+
+	}
+|
+	conditional_exp '-' conditional_exp
+	{
+
+	}
+|
+	conditional_exp '*' conditional_exp
+	{
+
+	}
+|
+	conditional_exp '/' conditional_exp
+	{
+
+	}
+|
+	unary_exp
+	{
+
+	}
+;
+unary_exp:
+	'-' unary_exp
+	{
+
+	}
+|
 	variable
 	{
 		if (NOT_ONLY_PARSE)
@@ -535,6 +571,26 @@ conditional_exp:
 		{
 			$$ = $1;
 		}
+	}
+|
+	'(' FLOAT ')' unary_exp
+	{
+
+	}
+|
+	'(' INTEGER ')' unary_exp
+	{
+
+	}
+|
+	'(' DOUBLE ')' unary_exp
+	{
+
+	}
+|
+	'(' conditional_exp ')'
+	{
+
 	}
 ;
 
@@ -569,13 +625,24 @@ variable:
 constant:
 	INTEGER_NUMBER
 	{
-	if (NOT_ONLY_PARSE)
-	{
-		int num = $1;
+		if (NOT_ONLY_PARSE)
+		{
+			int num = $1;
 
-		Ast * num_ast = new Number_Ast<int>(num, int_data_type, get_line_number());
+			Ast * num_ast = new Number_Ast<int>(num, int_data_type, get_line_number());
 
-		$$ = num_ast;
+			$$ = num_ast;
+		}
 	}
+|
+	FLOAT_NUMBER
+	{
+		if(NOT_ONLY_PARSE)
+		{
+			float num = $1;
+			Ast * float_ast = new Number_Ast<float>(num,float_data_type);
+
+			$$ = num_ast;
+		}
 	}
 ;

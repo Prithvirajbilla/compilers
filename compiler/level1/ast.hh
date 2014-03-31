@@ -189,6 +189,7 @@ public:
 
 	Code_For_Ast & compile();
 	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
+	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra1,Lra_Outcome &lra2);
 	
 };
 

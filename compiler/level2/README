@@ -18,14 +18,13 @@
     Details of CFGLP (Control Flow Graph Language Processor) tool can be
     found at http://www.cse.iitb.ac.in/~uday/cfglp
 
-    This directory (either level-0-32bits or level-0-64bits) contains 
-    the following:
-    - Source files for cfglp (.cc, .ll, .yy and .hh files)
-    - cfgpp32/cfglpp64 executable
-    - plugin32.so/plugin64.so shared object
+    This directory level-2-32bit or level-2-64bit contains the following:
+    - cfglp32 or cfglp64 executable
+    - cfgpp32 or cfgpp64 executable
+    - plugin32.so or plugin64.so shared object
     - test_files directory
          - valid .c files
-         - invalid .ecfg (erroneous cfg) files
+         - invalid .ecfg (error cfg) files
     - README
     - Makefile.cfg
     - Makefile.cfglp

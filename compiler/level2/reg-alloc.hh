@@ -97,6 +97,8 @@ class Register_Descriptor
     void reset_use_for_expr_result();
 
     bool is_free();
+
+    int size_list();
 };
 
 ////////////////////////////// Lra_Outcome ///////////////////////////////////////
