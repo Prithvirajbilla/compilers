@@ -58,6 +58,8 @@ parser.cc parserbase.h: parser.yy parser.ih parser.h
 clean :
 	rm -f *.o cfglp64 scannerbase.h parserbase.h scanner.cc parser.cc parser.yy.output
 	rm -f cscope.out tags a.out
+	rm -f test_files/*.ic test_files/*.our
+	rm -f test_files/*.cfg test_files/*.spim
 
 ###########################################################################
 

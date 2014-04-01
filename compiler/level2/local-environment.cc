@@ -118,6 +118,47 @@ Result_Enum Eval_Result_Value_Int::get_result_enum()
 {
 	return result_type;
 }
+///////////////////////////////////////////////////////////////////////////////////
+Eval_Result_Value_Float::Eval_Result_Value_Float()
+{
+	value = 0;
+	defined = false;
+	result_type = float_result;
+}
+
+Eval_Result_Value_Float::~Eval_Result_Value_Float()
+{ }
+void Eval_Result_Value_Float::set_value(float number)
+{
+	value = number;
+	defined = true;
+}
+
+
+float Eval_Result_Value_Float::get_value()
+{
+	return value;
+}
+
+void Eval_Result_Value_Float::set_variable_status(bool def)
+{
+	defined = def;
+}
+
+bool Eval_Result_Value_Float::is_variable_defined()
+{
+	return defined;
+}
+
+void Eval_Result_Value_Float::set_result_enum(Result_Enum res)
+{
+	result_type = res;
+}
+
+Result_Enum Eval_Result_Value_Float::get_result_enum()
+{
+	return result_type;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////
 

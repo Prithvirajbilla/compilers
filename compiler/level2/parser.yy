@@ -49,7 +49,7 @@
 %token <integer_value> INTEGER_NUMBER BBNUM
 %token <float_value> FLOAT_NUMBER
 %token <string_value> NAME
-%token RETURN INTEGER 
+%token RETURN INTEGER FLOAT DOUBLE
 %token ASSIGN
 %token IF 
 %token ELSE
@@ -102,14 +102,14 @@ optional_declaration_list:
 |
 	variable_declaration_list
 	{
-	if (NOT_ONLY_PARSE)
-	{
-		Symbol_Table * global_table = $1;
+		if (NOT_ONLY_PARSE)
+		{
+			Symbol_Table * global_table = $1;
 
-		CHECK_INVARIANT((global_table != NULL), "Global declarations cannot be null");
+			CHECK_INVARIANT((global_table != NULL), "Global declarations cannot be null");
 
-		program_object.set_global_table(*global_table);
-	}
+			program_object.set_global_table(*global_table);
+		}
 	}
 ;
 
@@ -235,37 +235,69 @@ variable_declaration_list:
 variable_declaration:
 	declaration ';'
 	{
-	if (NOT_ONLY_PARSE)
-	{
-		pair<Data_Type, string> * decl_stmt = $1;
+		if (NOT_ONLY_PARSE)
+		{
+			pair<Data_Type, string> * decl_stmt = $1;
 
-		CHECK_INVARIANT((decl_stmt != NULL), "Declaration cannot be null");
+			CHECK_INVARIANT((decl_stmt != NULL), "Declaration cannot be null");
 
-		Data_Type type = decl_stmt->first;
-		string decl_name = decl_stmt->second;
+			Data_Type type = decl_stmt->first;
+			string decl_name = decl_stmt->second;
 
-		Symbol_Table_Entry * decl_entry = new Symbol_Table_Entry(decl_name, type, get_line_number());
+			Symbol_Table_Entry * decl_entry = new Symbol_Table_Entry(decl_name, type, get_line_number());
 
-		$$ = decl_entry;
+			$$ = decl_entry;
 
-	}
+		}
 	}
 ;
 
 declaration:
 	INTEGER NAME
 	{
-	if (NOT_ONLY_PARSE)
-	{
-		CHECK_INVARIANT(($2 != NULL), "Name cannot be null");
+		if (NOT_ONLY_PARSE)
+		{
+			CHECK_INVARIANT(($2 != NULL), "Name cannot be null");
 
-		string name = *$2;
-		Data_Type type = int_data_type;
+			string name = *$2;
+			Data_Type type = int_data_type;
 
-		pair<Data_Type, string> * declar = new pair<Data_Type, string>(type, name);
+			pair<Data_Type, string> * declar = new pair<Data_Type, string>(type, name);
 
-		$$ = declar;
+			$$ = declar;
+		}
 	}
+|
+	FLOAT NAME
+	{
+		if (NOT_ONLY_PARSE)
+		{
+			CHECK_INVARIANT(($2 != NULL), "Name cannot be null");
+
+			string name = *$2;
+			Data_Type type = float_data_type;
+
+			pair<Data_Type, string> * declar = new pair<Data_Type, string>(type, name);
+
+			$$ = declar;
+		}
+
+	}
+|
+	DOUBLE NAME
+	{
+		if (NOT_ONLY_PARSE)
+		{
+			CHECK_INVARIANT(($2 != NULL), "Name cannot be null");
+
+			string name = *$2;
+			Data_Type type = float_data_type;
+
+			pair<Data_Type, string> * declar = new pair<Data_Type, string>(type, name);
+
+			$$ = declar;
+		}
+
 	}
 ;
 
@@ -462,15 +494,6 @@ GOTO_exp:
 ;
 
 conditional_exp:
-	'(' conditional_exp ')'
-	{
-		if (NOT_ONLY_PARSE)
-		{	
-			$$ = $2;
-
-		}
-	}
-|
 	conditional_exp OP2 conditional_exp
 	{
 		if (NOT_ONLY_PARSE)
@@ -528,33 +551,55 @@ conditional_exp:
 |
 	conditional_exp '+' conditional_exp
 	{
-
+		if (NOT_ONLY_PARSE)
+		{	
+			$$ = new Expression_Ast($1, $3, PLUS, get_line_number());
+			$$->check_ast();
+		}
 	}
 |
 	conditional_exp '-' conditional_exp
 	{
+		if (NOT_ONLY_PARSE)
+		{	
+			$$ = new Expression_Ast($1, $3, MINUS, get_line_number());
+			$$->check_ast();
+		}
 
 	}
 |
 	conditional_exp '*' conditional_exp
 	{
-
+		if (NOT_ONLY_PARSE)
+		{	
+			$$ = new Expression_Ast($1, $3, MULT, get_line_number());
+			$$->check_ast();
+		}
 	}
 |
 	conditional_exp '/' conditional_exp
 	{
+		if (NOT_ONLY_PARSE)
+		{	
+			$$ = new Expression_Ast($1, $3, DIV, get_line_number());
+			$$->check_ast();
+		}
 
 	}
 |
 	unary_exp
 	{
-
+		if(NOT_ONLY_PARSE)
+		{
+			$$ = $1;
+		}
 	}
 ;
 unary_exp:
 	'-' unary_exp
 	{
-
+		$$ = new Uminus_Ast($2,get_line_number());
+		$$->check_ast();
 	}
 |
 	variable
@@ -575,22 +620,28 @@ unary_exp:
 |
 	'(' FLOAT ')' unary_exp
 	{
-
+		$$ = new Typecast_Ast($4,float_data_type,get_line_number());
+		$$->check_ast();
 	}
 |
 	'(' INTEGER ')' unary_exp
 	{
-
+		$$ = new Typecast_Ast($4,int_data_type,get_line_number());
+		$$->check_ast();
 	}
 |
 	'(' DOUBLE ')' unary_exp
 	{
-
+		$$ = new Typecast_Ast($4,float_data_type,get_line_number());
+		$$->check_ast();
 	}
 |
 	'(' conditional_exp ')'
 	{
-
+		if(NOT_ONLY_PARSE)
+		{
+			$$ = $2;
+		}
 	}
 ;
 
@@ -640,9 +691,9 @@ constant:
 		if(NOT_ONLY_PARSE)
 		{
 			float num = $1;
-			Ast * float_ast = new Number_Ast<float>(num,float_data_type);
+			Ast * float_ast = new Number_Ast<float>(num,float_data_type,get_line_number());
 
-			$$ = num_ast;
+			$$ = float_ast;
 		}
 	}
 ;

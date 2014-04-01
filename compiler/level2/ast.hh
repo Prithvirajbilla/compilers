@@ -36,8 +36,7 @@
 
 using namespace std;
 
-enum rop { LE, LT, GT, GE, NE, EQ};
-
+enum rop { LE, LT, GT, GE, NE, EQ,PLUS,MINUS,MULT,DIV,UMINUS};
 class Ast;
 
 class Ast
@@ -136,7 +135,6 @@ public:
 	Code_For_Ast & compile();
 	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
 };
-
 class Return_Ast:public Ast
 {
 
@@ -192,6 +190,29 @@ public:
 	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra1,Lra_Outcome &lra2);
 	
 };
+class Expression_Ast:public Ast
+{
+	Ast * lhs;
+	Ast * rhs;
+	rop rel_oper;
+public:
+	Expression_Ast(Ast * temp_lhs, Ast * temp_rhs, rop a, int line);
+
+	~Expression_Ast();
+
+	Data_Type get_data_type();
+
+	bool check_ast();
+
+	void print(ostream & file_buffer);
+
+	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);
+
+	Code_For_Ast & compile();
+	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
+	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra1,Lra_Outcome &lra2);
+	
+};
 
 class IfCondition_Ast:public Ast
 {
@@ -213,4 +234,36 @@ public:
 	Code_For_Ast & compile();
 	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
 };
+
+class Typecast_Ast:public Ast
+{
+	Ast* typecast;
+	Data_Type prev;
+public:
+	Typecast_Ast(Ast * temp,Data_Type type,int line);
+	~Typecast_Ast();
+	Data_Type get_data_type();
+	bool check_ast();
+	Eval_Result & evaluate(Local_Environment & eval_env,ostream & file_buffer);
+	void print(ostream & file_buffer);
+	Code_For_Ast & compile();
+	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
+
+};
+class Uminus_Ast:public Ast
+{
+	Ast* typecast;
+public:
+	Uminus_Ast(Ast * temp,int line);
+	~Uminus_Ast();
+	Data_Type get_data_type();
+	bool check_ast();
+	Eval_Result & evaluate(Local_Environment & eval_env,ostream & file_buffer);
+	void print(ostream & file_buffer);
+	Code_For_Ast & compile();
+	Code_For_Ast & compile_and_optimize_ast(Lra_Outcome & lra);
+
+};
+
+
 #endif

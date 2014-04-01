@@ -350,14 +350,24 @@ Eval_Result & Name_Ast::evaluate(Local_Environment & eval_env, ostream & file_bu
 Code_For_Ast & Name_Ast::compile()
 {
 	Ics_Opd * opd = new Mem_Addr_Opd(*variable_symbol_entry);
-	Register_Descriptor * result_register = machine_dscr_object.get_new_register();
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
+		
 
 	if (command_options.is_do_lra_selected() == false)
 		variable_symbol_entry->update_register(result_register);
 	
 	Ics_Opd * register_opd = new Register_Addr_Opd(result_register);
 
-	Icode_Stmt * load_stmt = new Move_IC_Stmt(load, opd, register_opd);
+	Icode_Stmt * load_stmt;
+	if(node_data_type == int_data_type)
+		load_stmt = new Move_IC_Stmt(load, opd, register_opd);
+	else
+		load_stmt = new Move_IC_Stmt(load_d, opd, register_opd);
+
 
 	list<Icode_Stmt *> ic_list;
 	ic_list.push_back(load_stmt);
@@ -374,7 +384,12 @@ Code_For_Ast & Name_Ast::create_store_stmt(Register_Descriptor * store_register)
 	Ics_Opd * register_opd = new Register_Addr_Opd(store_register);
 	Ics_Opd * opd = new Mem_Addr_Opd(*variable_symbol_entry);
 
-	Icode_Stmt * store_stmt = new Move_IC_Stmt(store, register_opd, opd);
+	Icode_Stmt * store_stmt;
+/*	cout<<variable_symbol_entry->get_variable_name()<< " " <<node_data_type<<endl;
+*/	if(node_data_type == float_data_type)
+		store_stmt= new Move_IC_Stmt(store_d, register_opd, opd);
+	else
+		store_stmt = new Move_IC_Stmt(store, register_opd, opd);
 
 	if (command_options.is_do_lra_selected() == false)
 		variable_symbol_entry->free_register(store_register);
@@ -459,12 +474,21 @@ Eval_Result & Number_Ast<DATA_TYPE>::evaluate(Local_Environment & eval_env, ostr
 template <class DATA_TYPE>
 Code_For_Ast & Number_Ast<DATA_TYPE>::compile()
 {
-	Register_Descriptor * result_register = machine_dscr_object.get_new_register();
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
+
 	CHECK_INVARIANT((result_register != NULL), "Result register cannot be null");
 	Ics_Opd * load_register = new Register_Addr_Opd(result_register);
-	Ics_Opd * opd = new Const_Opd<int>(constant);
+	Ics_Opd * opd = new Const_Opd<DATA_TYPE>(constant);
+	Icode_Stmt * load_stmt;
 
-	Icode_Stmt * load_stmt = new Move_IC_Stmt(imm_load, opd, load_register);
+	if(node_data_type == int_data_type)
+		load_stmt = new Move_IC_Stmt(imm_load, opd, load_register);
+	else
+		load_stmt = new Move_IC_Stmt(imm_load_d, opd, load_register);
 
 	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
 	// res.set_register(result_register);
@@ -574,7 +598,11 @@ Eval_Result & Goto_Ast::evaluate(Local_Environment & eval_env, ostream & file_bu
 
 Code_For_Ast & Goto_Ast::compile()
 {
-	Register_Descriptor * result_register = machine_dscr_object.get_new_register();
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
 
 	Icode_Stmt * goto_stmt = new Goto_IC_Stmt(g, blocknum());
 
@@ -631,9 +659,10 @@ bool Relational_Ast::check_ast()
 {
 	CHECK_INVARIANT((lhs != NULL), "Lhs cannot be null");
 	CHECK_INVARIANT((rhs != NULL), "Rhs cannot be null");
-	if (lhs->get_data_type() == rhs->get_data_type())
+	if (lhs->get_data_type() == int_data_type || rhs->get_data_type() == int_data_type ||
+		lhs->get_data_type() == float_data_type || rhs->get_data_type() == float_data_type)
 	{
-		node_data_type = lhs->get_data_type();
+		node_data_type = int_data_type;
 		return true;
 	}
 	
@@ -727,8 +756,27 @@ Eval_Result & Relational_Ast::evaluate(Local_Environment & eval_env, ostream & f
 		}
 	}
 
-	result.set_value(answer);
-	return result;
+	if(node_data_type == float_data_type)
+	{
+
+		Eval_Result & result = * new Eval_Result_Value_Float();
+		result.set_value(answer);
+		return result;
+	}
+	else if (node_data_type == int_data_type)
+	{
+		int k = (int) answer;
+		Eval_Result & result  = * new Eval_Result_Value_Int();
+		result.set_value(k);
+		return result;
+	}
+	else
+	{
+		file_buffer<<" "<<node_data_type<<endl;
+		Eval_Result & result = * new Eval_Result_Value_Int();
+		result.set_value(answer);
+		return result;
+	}
 }
 
 Code_For_Ast & Relational_Ast::compile()
@@ -745,7 +793,11 @@ Code_For_Ast & Relational_Ast::compile()
 	Ics_Opd * register_opd_l = new Register_Addr_Opd(register_lhs);
 	Ics_Opd * register_opd_r = new Register_Addr_Opd(register_rhs);
 
-	Register_Descriptor * result_register = machine_dscr_object.get_new_register();
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
 
 	register_lhs->clear_lra_symbol_list();
 	register_rhs->clear_lra_symbol_list();
@@ -839,7 +891,11 @@ Code_For_Ast & Relational_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
 	Ics_Opd * register_opd_l = new Register_Addr_Opd(register_lhs);
 	Ics_Opd * register_opd_r = new Register_Addr_Opd(register_rhs);
 
-	Register_Descriptor * result_register = machine_dscr_object.get_new_register();
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
 
 	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
 	// res.set_register(result_register);
@@ -905,6 +961,320 @@ Code_For_Ast & Relational_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
 	return *relational_expr;
 }
 // /////////////////////////////////////////////////////////////////
+Expression_Ast::Expression_Ast(Ast * temp_lhs, Ast * temp_rhs, rop oper, int l)
+{
+	lhs = temp_lhs;
+	rhs = temp_rhs;
+	rel_oper = oper;
+	lineno = l;
+}
+
+Expression_Ast::~Expression_Ast()
+{
+	delete lhs;
+	delete rhs;
+}
+
+Data_Type Expression_Ast::get_data_type()
+{
+	return node_data_type;
+}
+
+bool Expression_Ast::check_ast()
+{
+	CHECK_INVARIANT((lhs != NULL), "Lhs cannot be null");
+	CHECK_INVARIANT((rhs != NULL), "Rhs cannot be null");
+	if (lhs->get_data_type() == int_data_type || rhs->get_data_type() == int_data_type ||
+		lhs->get_data_type() == float_data_type || rhs->get_data_type() == float_data_type)
+	{
+		node_data_type = lhs->get_data_type();
+		return true;
+	}
+	
+	CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH,"Relational Expression lhs and rhs data types doesn't match");
+}
+
+void Expression_Ast::print(ostream & file_buffer)
+{
+	file_buffer << "\n" << AST_SPACE << "Condition: ";
+	//LE, LT, GT, GE, NE, EE
+	switch(rel_oper)
+	{
+		case 6:
+		{
+			file_buffer << "\n" << AST_SPACE << "Arith: ";
+			file_buffer<<"PLUS\n";
+			break;
+		}
+		case 7:
+		{
+			file_buffer << "\n" << AST_SPACE << "Arith: ";
+			file_buffer<<"MINUS\n";
+			break;
+		}
+		case 8:
+		{
+			file_buffer << "\n" << AST_SPACE << "Arith: ";
+			file_buffer<<"MULT\n";
+			break;
+		}
+		case 9:
+		{
+			file_buffer << "\n" << AST_SPACE << "Arith: ";
+			file_buffer<<"DIV\n";
+			break;
+		}
+	}
+	file_buffer << "\n" << AST_NODE_SPACE << "   LHS (";
+	lhs->print(file_buffer);
+	file_buffer << ")";
+
+	file_buffer << "\n" << AST_NODE_SPACE << "   RHS (";
+	rhs->print(file_buffer);
+	file_buffer << ")";
+}
+
+Eval_Result & Expression_Ast::evaluate(Local_Environment & eval_env, ostream & file_buffer)
+{
+	Eval_Result & result = * new Eval_Result_Value_Int();
+
+	int lhs_int = lhs->evaluate(eval_env,file_buffer).get_int_value();
+	int rhs_int = rhs->evaluate(eval_env,file_buffer).get_int_value();
+	int answer;
+	switch(rel_oper)
+	{
+		case PLUS:
+		{
+			answer = (lhs_int + rhs_int);
+			break;
+		}
+		case MINUS:
+		{
+			answer = (lhs_int - rhs_int);
+			break;
+		}
+		case MULT:
+		{
+			answer = (lhs_int * rhs_int);
+			break;
+		}
+		case DIV:
+		{
+			answer = (lhs_int / rhs_int);
+			break;
+		}
+	}
+
+	if(node_data_type == float_data_type)
+	{
+
+		Eval_Result & result = * new Eval_Result_Value_Float();
+		result.set_value(answer);
+		return result;
+	}
+	else if (node_data_type == int_data_type)
+	{
+		int k = (int) answer;
+		Eval_Result & result  = * new Eval_Result_Value_Int();
+		result.set_value(k);
+		return result;
+	}
+	else
+	{
+		file_buffer<<" "<<node_data_type<<endl;
+		Eval_Result & result = * new Eval_Result_Value_Float();
+		result.set_value(answer);
+		return result;
+	}
+}
+
+Code_For_Ast & Expression_Ast::compile()
+{
+	CHECK_INVARIANT((lhs != NULL), "Lhs cannot be null");
+	CHECK_INVARIANT((rhs != NULL), "Rhs cannot be null");
+
+	Code_For_Ast & stmt_lhs = lhs->compile();
+	Code_For_Ast & stmt_rhs = rhs->compile();
+
+	Register_Descriptor * register_lhs = stmt_lhs.get_reg();
+	Register_Descriptor * register_rhs = stmt_rhs.get_reg();
+
+	Ics_Opd * register_opd_l = new Register_Addr_Opd(register_lhs);
+	Ics_Opd * register_opd_r = new Register_Addr_Opd(register_rhs);
+
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
+
+	register_lhs->clear_lra_symbol_list();
+	register_rhs->clear_lra_symbol_list();
+
+	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
+	// res.set_register(result_register);
+	result_register->update_symbol_information(res);
+
+	CHECK_INVARIANT((result_register != NULL), "Result register cannot be null");
+	Ics_Opd * register_opd = new Register_Addr_Opd(result_register);
+	
+	Icode_Stmt * rel_stmt;
+
+	
+	if(rel_oper==PLUS)
+	{
+		if(node_data_type == int_data_type)
+			rel_stmt = new Relational_IC_Stmt(plus_, register_opd_l , register_opd_r , register_opd);
+		else
+			rel_stmt = new Relational_IC_Stmt(plus_d, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==MINUS)
+	{
+		if(node_data_type == int_data_type)
+			rel_stmt = new Relational_IC_Stmt(minus_, register_opd_l , register_opd_r , register_opd);
+		else
+			rel_stmt = new Relational_IC_Stmt(minus_d, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==MULT)
+	{
+		if(node_data_type == int_data_type)
+			rel_stmt = new Relational_IC_Stmt(mult_, register_opd_l , register_opd_r , register_opd);
+		else
+			rel_stmt = new Relational_IC_Stmt(mult_d, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==DIV)
+	{
+		if(node_data_type == int_data_type)
+			rel_stmt = new Relational_IC_Stmt(div_, register_opd_l , register_opd_r , register_opd);
+		else
+			rel_stmt = new Relational_IC_Stmt(div_d, register_opd_l , register_opd_r , register_opd);
+	}
+	else
+	{
+		CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, "Invalid operation");
+	}
+
+	list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+	if (stmt_lhs.get_icode_list().empty() == false)
+		ic_list = stmt_lhs.get_icode_list();
+
+	if (stmt_rhs.get_icode_list().empty() == false)
+		ic_list.splice(ic_list.end(), stmt_rhs.get_icode_list());
+
+	ic_list.push_back(rel_stmt);
+
+	Code_For_Ast * relational_expr;
+	if (ic_list.empty() == false)
+		relational_expr = new Code_For_Ast(ic_list, result_register);
+
+	return *relational_expr;
+
+}
+Code_For_Ast & Expression_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
+{
+	CHECK_INVARIANT((lhs != NULL), "Lhs cannot be null");
+	CHECK_INVARIANT((rhs != NULL), "Rhs cannot be null");
+
+	int f1 = (typeid(*lhs) == typeid(Name_Ast));
+	int f2 = (typeid(*rhs) == typeid(Name_Ast));
+	bool s1 = false;
+	bool s2 = false;
+
+	if(f1 || typeid(*lhs) == typeid(Number_Ast<int>))
+	{
+		lra.optimize_lra(mc_2r, NULL, lhs);
+	}
+
+	Code_For_Ast & stmt_lhs = lhs->compile_and_optimize_ast(lra);
+	
+	s1 = lra.is_source_register();
+
+	if(f2 || typeid(*rhs) == typeid(Number_Ast<int>))
+	{
+		lra.optimize_lra(mc_2r, NULL, rhs);
+	}
+
+	Code_For_Ast & stmt_rhs = rhs->compile_and_optimize_ast(lra);
+
+	s2 = lra.is_source_register();
+
+	Register_Descriptor * register_lhs = stmt_lhs.get_reg();
+	Register_Descriptor * register_rhs = stmt_rhs.get_reg();
+
+	Ics_Opd * register_opd_l = new Register_Addr_Opd(register_lhs);
+	Ics_Opd * register_opd_r = new Register_Addr_Opd(register_rhs);
+
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register = machine_dscr_object.get_new_register(float_num);
+	else
+		result_register = machine_dscr_object.get_new_register(int_num);
+
+	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
+	// res.set_register(result_register);
+	result_register->update_symbol_information(res);
+
+	CHECK_INVARIANT((result_register != NULL), "Result register cannot be null");
+	Ics_Opd * register_opd = new Register_Addr_Opd(result_register);
+	
+	Icode_Stmt * rel_stmt;
+
+	if(rel_oper==GT)
+	{
+		rel_stmt = new Relational_IC_Stmt(sgt, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==LT)
+	{
+		rel_stmt = new Relational_IC_Stmt(slt, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==GE)
+	{
+		rel_stmt = new Relational_IC_Stmt(sge, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==LE)
+	{
+		rel_stmt = new Relational_IC_Stmt(sle, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==NE)
+	{
+		rel_stmt = new Relational_IC_Stmt(sne, register_opd_l , register_opd_r , register_opd);
+	}
+	else if(rel_oper==EQ)
+	{
+		rel_stmt = new Relational_IC_Stmt(seq, register_opd_l , register_opd_r , register_opd);
+	}
+	else
+	{
+		CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, "Invalid operation");
+	}
+
+	list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+	if (stmt_lhs.get_icode_list().empty() == false)
+		ic_list = stmt_lhs.get_icode_list();
+
+	if (stmt_rhs.get_icode_list().empty() == false)
+		ic_list.splice(ic_list.end(), stmt_rhs.get_icode_list());
+
+	ic_list.push_back(rel_stmt);
+
+	Code_For_Ast * relational_expr;
+	if (ic_list.empty() == false)
+		relational_expr = new Code_For_Ast(ic_list, result_register);
+
+	if(f1 == 0 || !s1)
+	{
+		register_lhs->clear_lra_symbol_list();
+	}
+	if(f2 == 0 || !s2)
+	{
+		register_rhs->clear_lra_symbol_list();
+	}
+
+	return *relational_expr;
+}
+
 // 	Goto_Ast * lhs;
 // 	Goto_Ast * rhs;
 // 	Relational_Ast * cond;
@@ -1049,3 +1419,240 @@ Code_For_Ast & IfCondition_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
 	return *if_else_stmt;	
 }
 ///////////////////////////////////////////
+/////Typecast_Ast//////////////////////////
+Typecast_Ast::Typecast_Ast(Ast * temp,Data_Type type,int line)
+{
+	typecast = temp;
+	prev = node_data_type;
+	node_data_type = type;
+	lineno = line;
+}
+Typecast_Ast::~Typecast_Ast()
+{
+
+}
+Data_Type Typecast_Ast::get_data_type()
+{
+	return node_data_type;
+}
+bool Typecast_Ast::check_ast()
+{
+	return true;
+}
+Eval_Result & Typecast_Ast::evaluate(Local_Environment & eval_env,ostream & file_buffer)
+{
+	float answer  = typecast->evaluate(eval_env, file_buffer).get_int_value();
+	if(node_data_type == int_data_type){
+		int k = answer;
+		Eval_Result & result = *new Eval_Result_Value_Int();
+		result.set_value(k);
+		return result;
+	}
+	else if(node_data_type == float_data_type){
+		Eval_Result & result = *new Eval_Result_Value_Float();
+		result.set_value(answer);
+		return result;
+	}
+}
+
+void Typecast_Ast::print(ostream & file_buffer)
+{
+	typecast->print(file_buffer);
+}
+
+Code_For_Ast & Typecast_Ast::compile()
+{
+	CHECK_INVARIANT((typecast != NULL), "Condition cannot be null");
+	
+	Code_For_Ast & load_stmt = typecast->compile();
+	
+	Register_Descriptor * load_register = load_stmt.get_reg();
+
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register= machine_dscr_object.get_new_register(float_num);
+	else
+		result_register= machine_dscr_object.get_new_register(int_num);
+
+	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
+	// res.set_register(result_register);
+	result_register->update_symbol_information(res);
+
+
+	Ics_Opd * register_opd = new Register_Addr_Opd(load_register);
+	Ics_Opd * register_opd_1 = new Register_Addr_Opd(result_register);
+
+	Icode_Stmt * cast_stmt;
+
+	Code_For_Ast * if_else_stmt;
+
+	
+	if(node_data_type == float_data_type)
+	{
+		if(typecast->get_data_type() == int_data_type)
+		{
+			load_register->clear_lra_symbol_list();
+	
+			list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+			if (load_stmt.get_icode_list().empty() == false)
+				ic_list = load_stmt.get_icode_list();
+
+			cast_stmt = new Cast_IC_Stmt(mtc1, register_opd, register_opd_1);
+			ic_list.push_back(cast_stmt);
+
+			if (ic_list.empty() == false)
+				if_else_stmt = new Code_For_Ast(ic_list, result_register);
+		}
+		else
+		{
+			result_register->clear_lra_symbol_list();
+	
+			list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+			if (load_stmt.get_icode_list().empty() == false)
+				ic_list = load_stmt.get_icode_list();
+
+			if (ic_list.empty() == false)
+				if_else_stmt = new Code_For_Ast(ic_list, load_register);
+
+		}
+	}
+	else
+	{
+		if(typecast->get_data_type() == float_data_type)
+		{
+			load_register->clear_lra_symbol_list();
+	
+			list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+			if (load_stmt.get_icode_list().empty() == false)
+				ic_list = load_stmt.get_icode_list();
+
+			cast_stmt = new Cast_IC_Stmt(mfc1, register_opd, register_opd_1);
+			ic_list.push_back(cast_stmt);
+
+			if (ic_list.empty() == false)
+				if_else_stmt = new Code_For_Ast(ic_list, result_register);
+		}
+		else
+		{
+			result_register->clear_lra_symbol_list();
+	
+			list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+			if (load_stmt.get_icode_list().empty() == false)
+				ic_list = load_stmt.get_icode_list();
+
+			if (ic_list.empty() == false)
+				if_else_stmt = new Code_For_Ast(ic_list, load_register);
+
+		}
+
+	}
+
+	
+
+	return *if_else_stmt;
+
+
+
+}
+Code_For_Ast & Typecast_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
+{
+
+}
+////////////////////////////////////////////////////////////////////////////////////////
+
+Uminus_Ast::Uminus_Ast(Ast * temp,int line)
+{
+	typecast = temp;
+	node_data_type = temp->get_data_type() ;
+}
+Uminus_Ast::~Uminus_Ast()
+{
+
+}
+Data_Type Uminus_Ast::get_data_type()
+{
+	return node_data_type;
+}
+bool Uminus_Ast::check_ast()
+{
+	return true;
+}
+Eval_Result & Uminus_Ast::evaluate(Local_Environment & eval_env,ostream & file_buffer)
+{
+	float answer  = typecast->evaluate(eval_env, file_buffer).get_int_value();
+	if(node_data_type == int_data_type){
+		int k = -1*answer;
+		Eval_Result & result = *new Eval_Result_Value_Int();
+		result.set_value(k);
+		return result;
+	}
+	else if(node_data_type == float_data_type){
+		Eval_Result & result = *new Eval_Result_Value_Float();
+		result.set_value(-1*answer);
+		return result;
+	}
+}
+
+void Uminus_Ast::print(ostream & file_buffer)
+{
+	typecast->print(file_buffer);
+}
+
+Code_For_Ast & Uminus_Ast::compile()
+{
+	CHECK_INVARIANT((typecast != NULL), "Condition cannot be null");
+	
+	Code_For_Ast & load_stmt = typecast->compile();
+	
+	Register_Descriptor * load_register = load_stmt.get_reg();
+
+	Register_Descriptor * result_register;
+	if(node_data_type == float_data_type)
+		result_register= machine_dscr_object.get_new_register(float_num);
+	else
+		result_register= machine_dscr_object.get_new_register(int_num);
+
+	Ics_Opd * register_opd = new Register_Addr_Opd(load_register);
+	Ics_Opd * register_opd_1 = new Register_Addr_Opd(result_register);
+
+	Icode_Stmt * cast_stmt;
+
+	Code_For_Ast * if_else_stmt;
+
+	Symbol_Table_Entry & res = *new Symbol_Table_Entry();
+	// res.set_register(result_register);
+	result_register->update_symbol_information(res);
+
+	load_register->clear_lra_symbol_list();
+
+	list<Icode_Stmt *> & ic_list = *new list<Icode_Stmt *>;
+
+	if (load_stmt.get_icode_list().empty() == false)
+		ic_list = load_stmt.get_icode_list();
+
+	if(node_data_type == int_data_type)
+		cast_stmt = new Uminus_IC_Stmt(uminus, register_opd, register_opd_1);
+	else
+		cast_stmt = new Uminus_IC_Stmt(uminus_d, register_opd, register_opd_1);
+	ic_list.push_back(cast_stmt);
+
+	if (ic_list.empty() == false)
+		if_else_stmt = new Code_For_Ast(ic_list, result_register);
+
+	
+
+	return *if_else_stmt;
+
+
+
+}
+Code_For_Ast & Uminus_Ast::compile_and_optimize_ast(Lra_Outcome & lra)
+{
+
+}
+
+template class Number_Ast<float>;

@@ -79,6 +79,9 @@ typedef enum
 	load, 
 	imm_load, 
 	store,
+	load_d, 
+	imm_load_d, 
+	store_d,
 	g,
 	sgt,
 	slt,
@@ -86,8 +89,21 @@ typedef enum
 	sle,
 	sne,
 	seq,
-	bne, 
-	nop 
+	bne,
+	nop,
+	plus_,
+	minus_,
+	mult_,
+	div_,
+	uminus,
+	plus_d,
+	minus_d,
+	mult_d,
+	div_d,
+	uminus_d,
+	mtc1,
+	mfc1,
+	
 } Tgt_Op;
 ///////////////////////// Instruction Descriptor ///////////////////////////////////
 
@@ -239,6 +255,49 @@ public:
 	void print_assembly(ostream & file_buffer);
 };
 
+class Cast_IC_Stmt: public Icode_Stmt
+{ 
+	Ics_Opd * opd1;   
+	Ics_Opd * result; 
+
+public:
+	Cast_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd1, Ics_Opd * result); 
+	~Cast_IC_Stmt() {} 
+	Cast_IC_Stmt & operator=(const Cast_IC_Stmt & rhs);
+
+	Instruction_Descriptor & get_inst_op_of_ics();
+
+	Ics_Opd * get_opd1();
+	void set_opd1(Ics_Opd * io);
+
+	Ics_Opd * get_result();
+	void set_result(Ics_Opd * io);
+
+	void print_icode(ostream & file_buffer);
+	void print_assembly(ostream & file_buffer);
+};
+class Uminus_IC_Stmt: public Icode_Stmt
+{ 
+	Ics_Opd * opd1;   
+	Ics_Opd * result; 
+
+public:
+	Uminus_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd1, Ics_Opd * result); 
+	~Uminus_IC_Stmt() {} 
+	Uminus_IC_Stmt & operator=(const Uminus_IC_Stmt & rhs);
+
+	Instruction_Descriptor & get_inst_op_of_ics();
+
+	Ics_Opd * get_opd1();
+	void set_opd1(Ics_Opd * io);
+
+	Ics_Opd * get_result();
+	void set_result(Ics_Opd * io);
+
+	void print_icode(ostream & file_buffer);
+	void print_assembly(ostream & file_buffer);
+};
+
 class Goto_IC_Stmt: public Icode_Stmt
 {
 	int lineno;
@@ -263,6 +322,29 @@ public:
 	Relational_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd1, Ics_Opd * opd2, Ics_Opd * result);
 
 	Relational_IC_Stmt & operator=(const Relational_IC_Stmt & rhs);
+
+	Ics_Opd * get_opd1();
+	void set_opd1(Ics_Opd * io);
+
+	Ics_Opd * get_opd2();
+	void set_opd2(Ics_Opd * io);
+
+	Ics_Opd * get_result();
+	void set_result(Ics_Opd * io);
+
+	void print_icode(ostream & file_buffer);	
+	void print_assembly(ostream & file_buffer);
+};
+
+class Expression_IC_Stmt: public Icode_Stmt
+{
+	Ics_Opd * opd1;
+	Ics_Opd * opd2;
+	Ics_Opd * result;
+public:	
+	Expression_IC_Stmt(Tgt_Op inst_op, Ics_Opd * opd1, Ics_Opd * opd2, Ics_Opd * result);
+
+	Expression_IC_Stmt & operator=(const Expression_IC_Stmt & rhs);
 
 	Ics_Opd * get_opd1();
 	void set_opd1(Ics_Opd * io);
@@ -344,5 +426,6 @@ public:
 
 	Code_For_Ast & operator=(const Code_For_Ast & rhs);
 };
+
 
 #endif
