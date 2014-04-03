@@ -287,9 +287,9 @@ void Machine_Description::initialize_register_table()
 void Machine_Description::initialize_instruction_table()
 {
 	spim_instruction_table[store] = new Instruction_Descriptor(store, "store", "sw", "", i_r_op_o1, a_op_o1_r);
-	spim_instruction_table[store_d] = new Instruction_Descriptor(store_d, "store.d", "sw.d", "", i_r_op_o1, a_op_o1_r);
+	spim_instruction_table[store_d] = new Instruction_Descriptor(store_d, "store.d", "s.d", "", i_r_op_o1, a_op_o1_r);
 	spim_instruction_table[load] = new Instruction_Descriptor(load, "load", "lw", "", i_r_op_o1, a_op_r_o1);
-	spim_instruction_table[load_d] = new Instruction_Descriptor(load_d, "load.d", "lw.d", "", i_r_op_o1, a_op_r_o1);	
+	spim_instruction_table[load_d] = new Instruction_Descriptor(load_d, "load.d", "l.d", "", i_r_op_o1, a_op_r_o1);	
 	spim_instruction_table[imm_load] = new Instruction_Descriptor(imm_load, "iLoad", "li", "", i_r_op_o1, a_op_r_o1);
 	spim_instruction_table[imm_load_d] = new Instruction_Descriptor(imm_load_d, "iLoad.d", "li.d", "", i_r_op_o1, a_op_r_o1);
 	spim_instruction_table[g]   = new Instruction_Descriptor(g, "goto", "j", "", i_op_o1, a_op_o1);
@@ -304,12 +304,12 @@ void Machine_Description::initialize_instruction_table()
 	spim_instruction_table[minus_] = new Instruction_Descriptor(minus_, "sub", "sub", "", i_r_o1_op_o2, a_op_r_o1_o2);
 	spim_instruction_table[mult_] = new Instruction_Descriptor(mult_, "mul", "mul", "", i_r_o1_op_o2, a_op_r_o1_o2);
 	spim_instruction_table[div_] = new Instruction_Descriptor(div_, "div", "div", "", i_r_o1_op_o2, a_op_r_o1_o2);
-	spim_instruction_table[uminus] = new Instruction_Descriptor(uminus, "uminus", "uminus", "", i_r_op_o1, a_op_o1_r);
+	spim_instruction_table[uminus] = new Instruction_Descriptor(uminus, "uminus", "neg", "", i_r_op_o1, a_op_o1_r);
 	spim_instruction_table[plus_d] = new Instruction_Descriptor(plus_d, "add.d", "add.d", "", i_r_o1_op_o2, a_op_r_o1_o2);
 	spim_instruction_table[minus_d] = new Instruction_Descriptor(minus_d, "sub.d", "sub.d", "", i_r_o1_op_o2, a_op_r_o1_o2);
 	spim_instruction_table[mult_d] = new Instruction_Descriptor(mult_d, "mul.d", "mul.d", "", i_r_o1_op_o2, a_op_r_o1_o2);
 	spim_instruction_table[div_d] = new Instruction_Descriptor(div_d, "div.d", "div.d", "", i_r_o1_op_o2, a_op_r_o1_o2);
-	spim_instruction_table[uminus_d] = new Instruction_Descriptor(uminus_d, "uminus.d", "uminus", "", i_r_op_o1, a_op_o1_r);
+	spim_instruction_table[uminus_d] = new Instruction_Descriptor(uminus_d, "uminus.d", "neg.d", "", i_r_op_o1, a_op_o1_r);
 	spim_instruction_table[mtc1] = new Instruction_Descriptor(mtc1, "mtc1", "mtc1", "", i_r_op_o1, a_op_o1_r);
 	spim_instruction_table[mfc1] = new Instruction_Descriptor(mfc1, "mfc1", "mfc1", "", i_r_op_o1, a_op_o1_r);
 

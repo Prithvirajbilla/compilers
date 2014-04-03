@@ -195,8 +195,9 @@ int Symbol_Table::get_size_of_value_type(Data_Type dt)
 	switch(dt)
 	{
 	case int_data_type: return -4; break;
+	case float_data_type: return -8;break;
 	case void_data_type: CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, "Attempt to seek size of type void");
-	defualt: CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, "Data type not supperted");
+	default: CHECK_INVARIANT(CONTROL_SHOULD_NOT_REACH, "Data type not supperted");
 	}
 }
 
