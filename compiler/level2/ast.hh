@@ -127,7 +127,7 @@ public:
 	~Number_Ast();
 
 	Data_Type get_data_type();
-
+	Symbol_Table_Entry & get_symbol_entry();
 	void print(ostream & file_buffer);
 
 	Eval_Result & evaluate(Local_Environment & eval_env, ostream & file_buffer);

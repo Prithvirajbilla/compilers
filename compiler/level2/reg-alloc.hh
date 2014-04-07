@@ -43,7 +43,7 @@ typedef enum
 	a1, a2, a3,
 	t0,      /* temporary caller-save registers */
 	t1, t2, t3, t4, t5, t6, t7, t8, t9, 
-  f0,f1, f2, f3, f4, f5, f6, f7, f8, f9,f10,
+  f0,f1, f2, f3, f4, f5, f6, f7, f8, f9,f10,f12,f14,f16,
 	s0,	/* temporary callee-save registers */ 
 	s1, s2, s3, s4, s5, s6, s7,
 	gp,	/* global data pointer register */
@@ -225,6 +225,7 @@ class Lra_Outcome
     ~Lra_Outcome() {}
     
     Register_Descriptor * get_register();
+    Register_Descriptor * get_register(Register_Val_Type l);
     bool is_new_register();
     bool is_source_register();
     bool is_destination_register();

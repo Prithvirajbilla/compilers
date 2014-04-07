@@ -6,12 +6,12 @@ do
 	cd ..
 	echo $i
 	make -f Makefile.cfg FILE=$i > /dev/null
-	./cfglp  -compile test_files/${i}s306.cfg
+	./cfglp   -lra -icode test_files/${i}s306.cfg
+	cp test_files/${i}s306.cfg.ic test_files/${i}s306.cfg.ic.our
 	#cp test_files/${i}s306.cfg.spim test_files/${i}s306.cfg.spim.our
-	cp test_files/${i}s306.cfg.spim test_files/${i}s306.cfg.spim.our
-	./cfglp64 -compile test_files/${i}s306.cfg 
+	./cfglp64  -lra -icode test_files/${i}s306.cfg 
+	diff -b -B test_files/${i}s306.cfg.ic.our test_files/${i}s306.cfg.ic
 	#diff -b -B test_files/${i}s306.cfg.spim.our test_files/${i}s306.cfg.spim
-	diff -b -B test_files/${i}s306.cfg.spim.our test_files/${i}s306.cfg.spim
 	cd test_files
 done
 cd ..

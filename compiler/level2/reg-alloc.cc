@@ -120,8 +120,9 @@ Lra_Outcome::Lra_Outcome()
 	register_move_needed = false;
 	load_needed = false;
 }
-
 Register_Descriptor * Lra_Outcome::get_register() 	{ return register_description; }
+Register_Descriptor * Lra_Outcome::get_register(Register_Val_Type l) 	{ return register_description; }
+
 bool Lra_Outcome::is_new_register()      		{ return is_a_new_register; }
 bool Lra_Outcome::is_source_register()   		{ return is_same_as_source; }
 bool Lra_Outcome::is_destination_register()    		{ return is_same_as_destination; }
@@ -161,7 +162,7 @@ void Lra_Outcome::optimize_lra(Lra_Scenario lcase, Ast * destination_memory, Ast
 			destination_register = destination_symbol_entry->get_register(); 
 		}
 
-		if (typeid(*source_memory) == typeid(Number_Ast<int>))
+		if (typeid(*source_memory) == typeid(Number_Ast<int>) || typeid(*source_memory) == typeid(Number_Ast<float>))
 			source_register = NULL;
 		else
 		{
@@ -183,7 +184,10 @@ void Lra_Outcome::optimize_lra(Lra_Scenario lcase, Ast * destination_memory, Ast
 		}
 		else 
 		{
-			result_register = machine_dscr_object.get_new_register();
+			if(destination_memory->get_data_type() == float_data_type)
+				result_register = machine_dscr_object.get_new_register(float_num);
+			else
+				result_register = machine_dscr_object.get_new_register();
 			is_a_new_register = true;
 			load_needed = true;
 		}
@@ -211,7 +215,10 @@ void Lra_Outcome::optimize_lra(Lra_Scenario lcase, Ast * destination_memory, Ast
 		}
 		else 
 		{
-			result_register = machine_dscr_object.get_new_register();
+			if(source_memory->get_data_type() == float_data_type)
+				result_register = machine_dscr_object.get_new_register(float_num);
+			else
+				result_register = machine_dscr_object.get_new_register();
 			is_a_new_register = true;
 			load_needed = true;
 			Symbol_Table_Entry s = * new Symbol_Table_Entry();
@@ -270,6 +277,9 @@ void Machine_Description::initialize_register_table()
 	spim_register_table[f6] = new Register_Descriptor(f6, "f6", float_num, gp_data);
 	spim_register_table[f8] = new Register_Descriptor(f8, "f8", float_num, gp_data);
 	spim_register_table[f10] = new Register_Descriptor(f10, "f10", float_num, gp_data);
+	spim_register_table[f12] = new Register_Descriptor(f12, "f12", float_num, gp_data);
+	spim_register_table[f14] = new Register_Descriptor(f14, "f14", float_num, gp_data);
+	spim_register_table[f16] = new Register_Descriptor(f16, "f16", float_num, gp_data);
 	spim_register_table[s0] = new Register_Descriptor(s0, "s0", int_num, gp_data);
 	spim_register_table[s1] = new Register_Descriptor(s1, "s1", int_num, gp_data);
 	spim_register_table[s2] = new Register_Descriptor(s2, "s2", int_num, gp_data);
